@@ -19,6 +19,14 @@ const projects = [
     tech: ["React", "Node.js", "Express.js", "MongoDB", "TypeScript", "AI Chatbot"],
     github: "https://github.com/SubhamKhandual007/Suraksha-Setu",
     live: "https://suraksha-setu-oxkw.vercel.app"
+  },
+  {
+    title: "SuuSri AI PPT Generator",
+    description: "An intelligent, automated presentation platform that generates professional, highly optimized PowerPoint slides from custom topics and prompts, powered by high-speed Groq and Gemini models.",
+    image: "/suusriai.png",
+    tech: ["Python", "Flask", "Gemini AI", "Groq AI", "Bootstrap"],
+    github: "https://github.com/SubhamKhandual007/ppt-generator",
+    live: "https://ppt-generator-seven-mu.vercel.app"
   }
 ];
 
