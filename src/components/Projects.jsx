@@ -21,20 +21,20 @@ const projects = [
     live: "https://suraksha-setu-oxkw.vercel.app"
   },
   {
-    title: "SuuSri AI PPT Generator",
+    title: "Sayraa Ai PPT Generator",
     description: "An intelligent, automated presentation platform that generates professional, highly optimized PowerPoint slides from custom topics and prompts, powered by high-speed Groq and Gemini models.",
-    image: "/suusriai.png",
+    image: "/sayraaai.png",
     tech: ["Python", "Flask", "Gemini AI", "Groq AI", "Bootstrap"],
     github: "https://github.com/SubhamKhandual007/ppt-generator",
     live: "https://ppt-generator-seven-mu.vercel.app"
   },
   {
-    title: "SuuSri Health Care AI Assistant",
+    title: "Sayraa Health Care Ai Assistant",
     description: "A multilingual, voice-enabled AI health companion built with React, Groq LLM, Firebase, and PWA support — designed to make healthcare guidance accessible in Odia, Hindi, and English.",
     image: "/chat_bg.png",
     tech: ["React", "Groq LLM", "Firebase", "PWA", "Web Speech API", "Tailwind CSS"],
-    github: "https://github.com/SubhamKhandual007/suusri-health-care-ai-assistant",
-    live: "https://suusri-health-care-ai-assistant.vercel.app"
+    github: "https://github.com/SubhamKhandual007/sayraa-health-care-ai-assistant.git",
+    live: "https://sayraa-health-care-ai-assistant.vercel.app/"
   }
 ];
 
