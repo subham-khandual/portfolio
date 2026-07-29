@@ -1,0 +1,141 @@
+.footerSection {
+  position: relative;
+  background: #030712;
+  border-top: 1px solid rgba(0, 240, 255, 0.15);
+  padding-top: 3rem;
+  padding-bottom: 2.5rem;
+}
+
+.waveWrapper {
+  position: absolute;
+  top: -60px;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.waveSvg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 60px;
+}
+
+.footerContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.footerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.brandInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 450px;
+}
+
+.footerLogo {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.footerTagline {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.socialRow {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.socialBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.socialBtn:hover {
+  background: rgba(0, 240, 255, 0.15);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+}
+
+.footerBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.copyright {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+}
+
+.visitorBadge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.825rem;
+  color: var(--accent-blue);
+  background: rgba(0, 240, 255, 0.08);
+  padding: 0.3rem 0.85rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 240, 255, 0.2);
+}
+
+.backToTopBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(139, 92, 246, 0.2));
+  border: 1px solid var(--accent-blue);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.backToTopBtn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 20px #00f0ff;
+  background: var(--accent-blue);
+  color: #030712;
+}
+
+@media (max-width: 768px) {
+  .footerTop, .footerBottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}

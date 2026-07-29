@@ -1,0 +1,90 @@
+.githubSection {
+  position: relative;
+  background: var(--bg-primary);
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3.5rem;
+}
+
+.statBannerCard {
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.bannerImg {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+}
+
+.subTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.reposGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.repoCard {
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  height: 100%;
+}
+
+.repoHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.repoName {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent-blue);
+}
+
+.repoDesc {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.repoMeta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.metaBadge {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+@media (max-width: 768px) {
+  .statsRow {
+    grid-template-columns: 1fr;
+  }
+}

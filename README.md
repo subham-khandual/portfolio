@@ -94,7 +94,7 @@ portfolio/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/SubhamKhandual007/portfolio.git
+   git clone https://github.com/subham-khandual/portfolio.git
    cd portfolio
    ```
 
@@ -285,7 +285,7 @@ This project is open source and available under the MIT License. Feel free to us
 
 - 📧 **Email:** [your-email@example.com](mailto:your-email@example.com)
 - 💼 **LinkedIn:** [SubhamKhandual007](https://linkedin.com/in/SubhamKhandual007)
-- 🐙 **GitHub:** [@SubhamKhandual007](https://github.com/SubhamKhandual007)
+- 🐙 **GitHub:** [@subham-khandual](https://github.com/subham-khandual)
 - 🐦 **Twitter:** [@SubhamKhandual](https://twitter.com/SubhamKhandual)
 
 ---
@@ -299,6 +299,6 @@ If you found this portfolio helpful, please consider:
 
 ---
 
-**Made with ❤️ by [Subham Khandual](https://github.com/SubhamKhandual007)**
+**Made with ❤️ by [Subham Khandual](https://github.com/subham-khandual)**
 
 Last updated: May 2026

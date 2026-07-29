@@ -1,94 +1,128 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Briefcase, Trophy, Rocket, CheckCircle2 } from 'lucide-react';
+import { Briefcase, Trophy, Rocket, CheckCircle2, Award, Calendar } from 'lucide-react';
+import { usePortfolio } from '../context/PortfolioContext';
+import { soundManager } from '../utils/audio';
 import styles from './Experience.module.css';
 
+const timelineEvents = [
+  {
+    type: 'internship',
+    title: 'AI / ML Intern',
+    organization: 'Central Tool Room & Training Centre (CTTC), Bhubaneswar',
+    period: 'May 2025 – July 2025',
+    icon: <Rocket size={20} />,
+    color: '#00f0ff',
+    details: [
+      'Developed end-to-end Machine Learning pipelines using Python, Scikit-learn, and Pandas.',
+      'Gained practical experience in data preprocessing, feature engineering, and model evaluation.',
+      'Explored real-world computer vision & predictive analytics applications for healthcare and agriculture.',
+      'Collaborated on innovative projects and learned industry-grade agile development workflows.'
+    ]
+  },
+  {
+    type: 'certification',
+    title: 'NPTEL Academic Certifications',
+    organization: 'IIT Kharagpur & IIIT Hyderabad',
+    period: '2024 – 2025',
+    icon: <Trophy size={20} />,
+    color: '#8b5cf6',
+    details: [
+      'NPTEL Certification in Programming in Java - IIT Kharagpur (Score: 55%)',
+      'NPTEL Certification in Industry 4.0 & IIoT - IIT Kharagpur (Score: 67%)',
+      'NPTEL Certification in Privacy & Security in Social Media - IIIT Hyderabad (Score: 54%)'
+    ]
+  },
+  {
+    type: 'internship',
+    title: 'Core Java Intern',
+    organization: 'Central Tool Room & Training Centre (CTTC), Bhubaneswar',
+    period: 'July 2024',
+    icon: <Briefcase size={20} />,
+    color: '#ec4899',
+    details: [
+      'Mastered Object-Oriented Programming (OOP) concepts, multi-threading, and exception handling in Java.',
+      'Improved algorithmic problem-solving and debugging skills through practical Java tasks.',
+      'Built console and desktop database applications connected via JDBC and MySQL.'
+    ]
+  }
+];
+
 const Experience = () => {
+  const { soundEnabled } = usePortfolio();
+
   return (
-    <section id="experience" className="section">
+    <section id="experience" className={styles.expSection}>
       <div className="container">
-        <motion.div 
+        {/* Section Header */}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           className={styles.header}
         >
           <h2 className="section-title">
-            Journey & <span className="text-gradient">Experience</span>
+            Professional <span className="text-gradient">Experience & Journey</span>
           </h2>
           <p className="section-subtitle">
-            My professional internship, major achievements, and early exposure to tech.
+            An animated timeline documenting my technical internships, domain specialization, and academic certifications.
           </p>
         </motion.div>
 
+        {/* Timeline Wrapper */}
         <div className={styles.timeline}>
-          
-          {/* Experience Section */}
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            className={styles.timelineItem}
-          >
-            <div className={styles.iconCircle}>
-              <Briefcase size={20} />
-            </div>
-            <div className={`glass ${styles.itemContent}`}>
-              <span className={styles.dateBadge}>July 2024</span>
-              <h3 className={styles.itemTitle}>Core Java Intern – CTTC</h3>
-              
-              <ul className={styles.list}>
-                <li><CheckCircle2 size={16} className={styles.checkIcon}/> Worked on Core Java concepts and application development fundamentals.</li>
-                <li><CheckCircle2 size={16} className={styles.checkIcon}/> Improved problem-solving, debugging, and object-oriented programming skills.</li>
-                <li><CheckCircle2 size={16} className={styles.checkIcon}/> Gaining hands-on experience in real-world development practices and project workflows.</li>
-                <li><CheckCircle2 size={16} className={styles.checkIcon}/> Collaborated on practical assignments and technical learning activities.</li>
-              </ul>
-            </div>
-          </motion.div>
+          <div className={styles.timelineLine} />
 
-          {/* Achievements Section */}
-          <motion.div 
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            className={styles.timelineItem}
-          >
-            <div className={styles.iconCircle}>
-              <Trophy size={20} />
-            </div>
-            <div className={`glass ${styles.itemContent}`}>
-              <span className={styles.categoryBadge}>Certifications</span>
-              
-              <ul className={styles.list}>
-                <li><CheckCircle2 size={16} className={styles.checkIcon}/> Achieved NPTEL certification in <a href="https://drive.google.com/file/d/1bHwePdthZxv-TLBczLNetwMqFLSoQJQx/view?usp=sharing" target="_blank" rel="noopener noreferrer" style={{color: 'var(--accent-secondary)', textDecoration: 'underline'}}>Programming in Java 55% (2024)</a></li>
-                <li><CheckCircle2 size={16} className={styles.checkIcon}/> Achieved NPTEL certification in <a href="https://drive.google.com/file/d/1_0UBUT9-EZlX2F_JgBuF-_eSvMaS0uOQ/view?usp=sharing" target="_blank" rel="noopener noreferrer" style={{color: 'var(--accent-secondary)', textDecoration: 'underline'}}>Introduction to Industry 4.0 And Industrial Internet of Things 67% (2025)</a></li>
-                <li><CheckCircle2 size={16} className={styles.checkIcon}/> Achieved NPTEL certification in <a href="https://drive.google.com/file/d/1h5TgH-huiZN7Hr_x95uaiidFim28wSgz/view?usp=sharing" target="_blank" rel="noopener noreferrer" style={{color: 'var(--accent-secondary)', textDecoration: 'underline'}}>Privacy and Security in Online Social Media 54% (2025)</a></li>
-              </ul>
-            </div>
-          </motion.div>
+          {timelineEvents.map((event, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, x: idx % 2 === 0 ? -40 : 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.6, delay: idx * 0.15 }}
+              className={`${styles.timelineItem} ${idx % 2 === 0 ? styles.leftItem : styles.rightItem}`}
+            >
+              {/* Icon Circle */}
+              <div
+                className={styles.iconCircle}
+                style={{
+                  backgroundColor: event.color,
+                  boxShadow: `0 0 20px ${event.color}`,
+                }}
+              >
+                {event.icon}
+              </div>
 
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            className={styles.timelineItem}
-          >
-            <div className={styles.iconCircle}>
-              <Rocket size={20} />
-            </div>
-            <div className={`glass ${styles.itemContent}`}>
-              <span className={styles.dateBadge}>May 2025 – July 2025</span>
-              <h3 className={styles.itemTitle}>AI/ML Intern – CTTC, Bhubaneswar</h3>
-              
-              <ul className={styles.list}>
-                <li><CheckCircle2 size={16} className={styles.checkIcon}/> Worked on AI and Machine Learning concepts with hands-on project development.</li>
-                <li><CheckCircle2 size={16} className={styles.checkIcon}/> Gained practical experience in data processing, model building, and problem-solving techniques.</li>
-                <li><CheckCircle2 size={16} className={styles.checkIcon}/> Explored real-world applications of AI/ML while improving analytical and technical skills.</li>
-                <li><CheckCircle2 size={16} className={styles.checkIcon}/> Collaborated on innovative projects and learned industry-level development workflows.</li>
-              </ul>
-            </div>
-          </motion.div>
+              {/* Glass Card */}
+              <div
+                className={`${styles.eventCard} glass-card`}
+                onMouseEnter={() => {
+                  if (soundEnabled) soundManager.playHoverSound();
+                }}
+              >
+                <div className={styles.cardTop}>
+                  <span className={styles.periodBadge}>
+                    <Calendar size={14} /> {event.period}
+                  </span>
+                  <span className={styles.typeBadge} style={{ borderColor: event.color, color: event.color }}>
+                    {event.type.toUpperCase()}
+                  </span>
+                </div>
 
+                <h3 className={styles.eventTitle}>{event.title}</h3>
+                <h4 className={styles.eventOrg}>{event.organization}</h4>
+
+                <ul className={styles.detailsList}>
+                  {event.details.map((detail, dIdx) => (
+                    <li key={dIdx}>
+                      <CheckCircle2 size={16} color={event.color} style={{ minWidth: '16px' }} />
+                      <span>{detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

@@ -1,112 +1,139 @@
 .aboutSection {
-  background: var(--bg-secondary);
   position: relative;
-}
-
-.header {
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto 4rem auto;
+  background: var(--bg-secondary);
 }
 
 .mainGrid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 3rem;
-  align-items: center;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 3.5rem;
+  align-items: start;
 }
 
-@media (min-width: 992px) {
-  .mainGrid {
-    grid-template-columns: 400px 1fr;
-  }
-}
-
-.imageSide {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.imageContainer {
-  position: relative;
-  width: 100%;
-  max-width: 350px;
-  aspect-ratio: 4/5;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-}
-
-.aboutImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform var(--transition-normal);
-}
-
-.imageContainer:hover .aboutImage {
-  transform: scale(1.05);
-}
-
-.imageDecoration {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 2px solid var(--accent-primary);
-  border-radius: var(--radius-xl);
-  transform: translate(15px, 15px);
-  z-index: -1;
-  opacity: 0.5;
-}
-
-.cardsSide {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  .cardsSide {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.card {
-  padding: 2rem;
-  border-radius: var(--radius-xl);
+.cubeSide {
   display: flex;
   flex-direction: column;
+  gap: 2rem;
+}
+
+.cubeCanvasWrapper {
+  height: 320px;
+  background: rgba(17, 24, 39, 0.5);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.cubeLabel {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: var(--accent-blue);
+  background: rgba(3, 7, 18, 0.8);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  letter-spacing: 1px;
+}
+
+.quickFactsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
-  transition: transform var(--transition-normal);
 }
 
-.card:hover {
-  transform: translateY(-5px);
-}
-
-.iconWrapper {
-  width: 50px;
-  height: 50px;
-  border-radius: var(--radius-full);
-  background: rgba(6, 182, 212, 0.1);
-  color: var(--accent-secondary);
+.factCard {
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(6, 182, 212, 0.2);
-  margin-bottom: 0.5rem;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
-.card h3 {
-  font-size: 1.25rem;
+.factLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.factValue {
+  font-size: 0.95rem;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
-.card p {
+.cardsSide {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card {
+  padding: 1.75rem;
+  border-radius: var(--radius-lg);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.iconWrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(139, 92, 246, 0.15));
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-blue);
+}
+
+.cardBody {
   color: var(--text-secondary);
-  font-size: 1rem;
-  line-height: 1.6;
+  line-height: 1.7;
+  font-size: 0.975rem;
+}
+
+.educationDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.eduHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.eduList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.eduList li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 992px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
 }
