@@ -1,0 +1,577 @@
+/* ── 3D Card Container Layout ────────────────── */
+.cardOuter {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.cardFloatingWrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.cardPerspectiveContainer {
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+
+/* ── Frosted Glass Inner Card ────────────────── */
+.cardInner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.65); /* Transparent dark background */
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.12); /* Base border */
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45); /* Premium shadows */
+  transition: 
+    border-color 0.4s ease, 
+    box-shadow 0.4s ease, 
+    background-color 0.4s ease;
+  cursor: pointer;
+  will-change: transform, box-shadow;
+}
+
+/* ── Dynamic Glowing Border (Orange-Blue Gradient) ── */
+.cardInner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px; /* Border thickness */
+  background: radial-gradient(
+    circle 240px at var(--mx, 50%) var(--my, 50%),
+    #F97316 0%,  /* Vibrant Orange */
+    #3B82F6 60%, /* Electric Blue */
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+  will-change: opacity;
+}
+
+.cardInner:hover::before {
+  opacity: 1;
+}
+
+/* ── Blended Dynamic Lighting ────────────────── */
+.spotlight {
+  position: absolute;
+  inset: 0;
+  background: 
+    /* White Specular Highlight (near mouse cursor) */
+    radial-gradient(
+      circle 100px at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 255, 255, 0.14) 0%,
+      transparent 80%
+    ),
+    /* Left Orange Rim Light */
+    radial-gradient(
+      circle 250px at calc(var(--mx, 50%) * 0.4) var(--my, 50%),
+      rgba(255, 107, 0, 0.15) 0%,
+      transparent 70%
+    ),
+    /* Right Blue Specular Ambient */
+    radial-gradient(
+      circle 350px at calc(100% - (100% - var(--mx, 50%)) * 0.4) var(--my, 50%),
+      rgba(37, 99, 235, 0.12) 0%,
+      transparent 75%
+    );
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  will-change: opacity;
+}
+
+.cardInner:hover .spotlight {
+  opacity: 1;
+}
+
+/* ── Background Cyber Grid Layer (Layer 1) ───── */
+.cardBg {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 0),
+    radial-gradient(rgba(249, 115, 22, 0.03) 1px, transparent 0);
+  background-size: 16px 16px;
+  background-position: 0 0, 8px 8px;
+  opacity: 0.35;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── Card Content Layers (Preserve-3D) ───────── */
+.layerWrapper {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* ── Featured & Category Badges ──────────────── */
+.featuredBadge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(249, 115, 22, 0.15); /* orange tinted background */
+  border: 1px solid rgba(249, 115, 22, 0.45);
+  color: #FB923C;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.15);
+}
+
+.categoryBadge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 8;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Project Image Layer (Layer 2) ───────────── */
+.imageContainer {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  background: #050816;
+  border-radius: 12px;
+  margin: 1rem 1rem 0 1rem;
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: 0 8px 24px -10px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+  will-change: transform;
+}
+
+.cardInner:hover .imageContainer {
+  box-shadow: 
+    0 15px 35px -12px rgba(0, 0, 0, 0.8),
+    0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.scanline {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+.projectImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  will-change: transform;
+}
+
+.cardInner:hover .projectImg {
+  transform: scale(1.12) rotate(1.5deg);
+}
+
+/* Image shine sweep */
+.shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.2) 45%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.2) 55%,
+    transparent 65%
+  );
+  background-size: 200% 200%;
+  background-position: -150% 0;
+  pointer-events: none;
+  z-index: 3;
+  transition: background-position 0.6s ease;
+}
+
+.cardInner:hover .shine {
+  animation: shineSweep 1.2s ease-out;
+}
+
+@keyframes shineSweep {
+  0% { background-position: -150% 0; }
+  100% { background-position: 150% 0; }
+}
+
+/* Image overlay icons */
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 8, 22, 0.85);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 4;
+}
+
+.cardInner:hover .imageOverlay {
+  opacity: 1;
+}
+
+.overlayBtns {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* ── Card Content Body ────────────────────────── */
+.cardContent {
+  padding: 1.25rem 1.5rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  z-index: 3;
+  transform-style: preserve-3d;
+}
+
+.cyberStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-code);
+  font-size: 0.7rem;
+  color: var(--accent-blue);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+
+.statusDot {
+  width: 5px;
+  height: 5px;
+  background-color: var(--accent-blue);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--accent-blue);
+  animation: cyberPulse 2s infinite;
+}
+
+@keyframes cyberPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ── Title & Subtitle Layers (Layer 3 & 4) ───── */
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+  transform-style: preserve-3d;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.subtitle {
+  font-size: 0.8rem;
+  color: #60A5FA; /* light blue */
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.description {
+  color: #E5E7EB; /* off white */
+  font-size: 0.85rem;
+  line-height: 1.55;
+  margin-bottom: 1.25rem;
+  flex: 1;
+}
+
+/* ── Tech Chips Layer (Layer 5) ──────────────── */
+.techStack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  transform-style: preserve-3d;
+}
+
+/* Stagger & alternate badges */
+.techBadgeOrange {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(249, 115, 22, 0.06);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  color: #FB923C; /* Soft orange */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: default;
+  will-change: transform;
+}
+
+.techBadgeOrange:hover {
+  color: #FFFFFF;
+  border-color: #F97316;
+  background: rgba(249, 115, 22, 0.18);
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.45);
+  transform: translateY(-2.5px) rotate(2deg) scale(1.05);
+}
+
+.techBadgeBlue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(59, 130, 246, 0.06);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #60A5FA; /* Soft blue */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: default;
+  will-change: transform;
+}
+
+.techBadgeBlue:hover {
+  color: #FFFFFF;
+  border-color: #3B82F6;
+  background: rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2.5px) rotate(-2deg) scale(1.05);
+}
+
+.techBadgeGlass {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94A3B8; /* Muted text */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: default;
+  will-change: transform;
+}
+
+.techBadgeGlass:hover {
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.18);
+  transform: translateY(-2.5px) scale(1.05);
+}
+
+/* Faint background watermark */
+.cyberWatermark {
+  position: absolute;
+  bottom: 4rem;
+  right: 1.5rem;
+  font-family: var(--font-code);
+  font-size: 0.55rem;
+  color: rgba(59, 130, 246, 0.03);
+  letter-spacing: 0.1em;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Action Buttons Layer (Layer 6) ──────────── */
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: auto;
+  transform-style: preserve-3d;
+}
+
+.detailsBtn {
+  background: none;
+  border: none;
+  color: #60A5FA; /* light blue */
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+
+.detailsBtn:hover {
+  color: #F97316; /* Vibrant Orange hover */
+  text-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+}
+
+.detailsBtn svg {
+  transition: transform 0.2s ease;
+}
+
+.detailsBtn:hover svg {
+  transform: scale(1.15) rotate(10deg);
+}
+
+.footerLinks {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* ── Customized Buttons ──────────────────────── */
+
+/* Common btn overlay styles */
+.btnGlass {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  color: #94A3B8;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  will-change: transform, box-shadow;
+}
+
+.btnGlass:hover {
+  border-color: #60A5FA;
+  box-shadow: 0 0 15px rgba(96, 165, 250, 0.35);
+  background: rgba(96, 165, 250, 0.1);
+  color: #FFFFFF;
+}
+
+/* GitHub Button: Dark glass, blue outline, orange hover glow */
+.btnGithub {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  color: #94A3B8;
+  border: 1px solid rgba(59, 130, 246, 0.35); /* blue outline */
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  will-change: transform, box-shadow;
+}
+
+.btnGithub:hover {
+  border-color: #3B82F6;
+  color: #FFFFFF;
+  background: rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 25px rgba(249, 115, 22, 0.45); /* orange hover glow */
+}
+
+/* Live Demo Button: Orange -> Blue gradient, animated glow */
+.btnLiveDemoMini {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #F97316 0%, #3B82F6 100%); /* Orange -> Blue */
+  border-radius: 50%;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+  will-change: transform, box-shadow;
+}
+
+.btnLiveDemoMini:hover {
+  box-shadow: 
+    0 0 20px rgba(249, 115, 22, 0.5),
+    0 0 20px rgba(59, 130, 246, 0.4);
+  transform: scale(1.08);
+}
+
+.btnGithub svg, .btnLiveDemoMini svg, .btnGlass svg {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.btnGithub:hover svg, .btnGlass:hover svg {
+  transform: scale(1.1) translate(0.5px, -0.5px);
+}
+
+.btnLiveDemoMini:hover svg {
+  transform: scale(1.1) rotate(15deg);
+}
+
+/* Keyboard focus state */
+.cardInner:focus-visible {
+  outline: 2px solid #F97316;
+  outline-offset: 4px;
+}
+
+/* ── Ripple effect styling ───────────────────── */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  background: rgba(249, 115, 22, 0.25);
+  pointer-events: none;
+  animation: rippleEffect 0.6s ease-out;
+}
+
+@keyframes rippleEffect {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}

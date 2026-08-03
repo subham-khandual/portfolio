@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Github, Eye, Sparkles, CheckCircle2, X, Code2, Layers, Star } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
+import { ExternalLink, Github, Sparkles, CheckCircle2, X, Code2, Layers, Star } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
+import { usePrefersReducedMotion, useDeviceType } from '../hooks/useTilt';
 import { soundManager } from '../utils/audio';
+import ProjectCard from './ProjectCard';
 import styles from './Projects.module.css';
 
 const projectsData = [
@@ -81,12 +83,76 @@ const projectsData = [
   }
 ];
 
-// Category color mapping
+// Theme-matched category colors (Orange x Blue theme)
 const categoryColors = {
-  'Full-Stack MERN': { bg: 'rgba(0, 240, 255, 0.1)', border: 'rgba(0, 240, 255, 0.4)', color: '#00f0ff' },
-  'AI / ML':         { bg: 'rgba(139, 92, 246, 0.1)', border: 'rgba(139, 92, 246, 0.4)', color: '#a78bfa' },
-  'AI Tool':         { bg: 'rgba(251, 191, 36, 0.1)', border: 'rgba(251, 191, 36, 0.4)', color: '#fbbf24' },
+  'Full-Stack MERN': { bg: 'rgba(249, 115, 22, 0.08)', border: 'rgba(249, 115, 22, 0.35)', color: '#F97316' },
+  'AI / ML':         { bg: 'rgba(59, 130, 246, 0.08)', border: 'rgba(59, 130, 246, 0.35)', color: '#3B82F6' },
+  'AI Tool':         { bg: 'rgba(251, 146, 60, 0.08)', border: 'rgba(251, 146, 60, 0.35)', color: '#FB923C' },
 };
+
+// Cinematic floating particles (Sparks, Orange and Blue dust, blurred bokeh circles)
+const StarBackground = React.memo(() => {
+  const stars = React.useMemo(() => {
+    return Array.from({ length: 45 }, (_, i) => {
+      const type = i % 4;
+      let color = '#ffffff';
+      let size = Math.random() * 1.5 + 0.5;
+      let blur = 0;
+      let opacity = Math.random() * 0.4 + 0.15;
+      
+      if (type === 1) {
+        color = '#FF6B00';
+        size = Math.random() * 2.5 + 1.2;
+        opacity = Math.random() * 0.45 + 0.2;
+      } else if (type === 2) {
+        color = '#38BDF8';
+        size = Math.random() * 2.5 + 1.2;
+        opacity = Math.random() * 0.45 + 0.2;
+      } else if (type === 3) {
+        color = i % 2 === 0 ? '#FF8A1F' : '#2563EB';
+        size = Math.random() * 22 + 10;
+        blur = Math.random() * 4 + 3;
+        opacity = Math.random() * 0.08 + 0.03;
+      }
+      
+      return {
+        id: i,
+        top: `${Math.random() * 100}%`,
+        left: `${Math.random() * 100}%`,
+        size,
+        color,
+        blur,
+        opacity,
+        delay: Math.random() * 6,
+        duration: Math.random() * 12 + 6,
+      };
+    });
+  }, []);
+
+  return (
+    <div className={styles.starContainer}>
+      {stars.map((star) => (
+        <div
+          key={star.id}
+          className={styles.star}
+          style={{
+            top: star.top,
+            left: star.left,
+            width: `${star.size}px`,
+            height: `${star.size}px`,
+            backgroundColor: star.color,
+            filter: star.blur ? `blur(${star.blur}px)` : 'none',
+            opacity: star.opacity,
+            animationDelay: `${star.delay}s`,
+            animationDuration: `${star.duration}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+});
+
+StarBackground.displayName = 'StarBackground';
 
 const Projects = () => {
   const { soundEnabled } = usePortfolio();
@@ -96,9 +162,58 @@ const Projects = () => {
   const filters = ['All', 'Full-Stack MERN', 'AI / ML', 'AI Tool'];
   const filtered = activeFilter === 'All' ? projectsData : projectsData.filter(p => p.category === activeFilter);
 
+  // Parallax Depth Configuration
+  const sectionRef = useRef(null);
+  const deviceType = useDeviceType();
+  const prefersReducedMotion = usePrefersReducedMotion();
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
+
+  const disableParallax = prefersReducedMotion || deviceType !== 'desktop';
+
+  // Raw coordinate transforms for 5 depth layers
+  const yBase = useTransform(scrollYProgress, [0, 1], [0, 0]);
+  const yOrangeGlowVal = useTransform(scrollYProgress, [0, 1], disableParallax ? [0, 0] : [-60, 60]);
+  const yBlueGlowVal = useTransform(scrollYProgress, [0, 1], disableParallax ? [0, 0] : [60, -60]);
+  const yParticlesVal = useTransform(scrollYProgress, [0, 1], disableParallax ? [0, 0] : [-90, 90]);
+  const yFogGridVal = useTransform(scrollYProgress, [0, 1], disableParallax ? [0, 0] : [-30, 30]);
+
+  // Spring physics config to smooth out scroll parallax updates
+  const springConfig = { stiffness: 80, damping: 22, mass: 0.4 };
+  const yOrangeGlow = useSpring(yOrangeGlowVal, springConfig);
+  const yBlueGlow = useSpring(yBlueGlowVal, springConfig);
+  const yParticles = useSpring(yParticlesVal, springConfig);
+  const yFogGrid = useSpring(yFogGridVal, springConfig);
+
   return (
-    <section id="projects" className={styles.projectsSection}>
-      <div className="container">
+    <section ref={sectionRef} id="projects" className={styles.projectsSection}>
+      {/* ───── Parallax Background Layers ───── */}
+      
+      {/* Layer 1: Dark Base (Static) */}
+      <motion.div style={{ y: yBase }} className={styles.gradientMesh} />
+      <motion.div style={{ y: yBase }} className={styles.noiseOverlay} />
+
+      {/* Layer 5: Cyber Grid & Aurora Flow & Volumetric Fog (Slow Parallax) */}
+      <motion.div style={{ y: yFogGrid }} className={styles.cyberGrid} />
+      <motion.div style={{ y: yFogGrid }} className={styles.auroraWave} />
+      <motion.div style={{ y: yFogGrid }} className={styles.volumetricFog} />
+
+      {/* Layer 2: Orange Glow - Left (Medium Parallax) */}
+      <motion.div style={{ y: yOrangeGlow }} className={styles.glowBlobOrange} />
+
+      {/* Layer 3: Blue Glow - Right (Medium Parallax) */}
+      <motion.div style={{ y: yBlueGlow }} className={styles.glowBlobBlue} />
+
+      {/* Layer 4: Floating Particles & Bokeh Circles (Fast Parallax) */}
+      <motion.div style={{ y: yParticles }} className={styles.starContainerWrapper}>
+        <StarBackground />
+      </motion.div>
+
+      {/* Main Content Layout */}
+      <div className="container" style={{ position: 'relative', zIndex: 6 }}>
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -107,7 +222,7 @@ const Projects = () => {
           className={styles.header}
         >
           <h2 className="section-title">
-            Featured <span className="text-gradient">Projects Showcase</span>
+            Featured <span className={styles.textGradientOB}>Projects Showcase</span>
           </h2>
           <p className="section-subtitle">
             A curated collection of full-stack MERN platforms, AI tools, machine learning classifiers, and web applications.
@@ -156,130 +271,14 @@ const Projects = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {filtered.map((project, idx) => {
-              const catStyle = categoryColors[project.category] || categoryColors['AI Tool'];
-              return (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.08 }}
-                  className={`${styles.projectCard} ${project.featured ? styles.featuredCard : ''} glass-card`}
-                  onMouseEnter={() => {
-                    if (soundEnabled) soundManager.playHoverSound();
-                  }}
-                >
-                  {/* Futuristic Corner Accents */}
-                  <div className={styles.cardCornerTL}></div>
-                  <div className={styles.cardCornerTR}></div>
-                  <div className={styles.cardCornerBL}></div>
-                  <div className={styles.cardCornerBR}></div>
-
-                  {/* Featured Badge */}
-                  {project.featured && (
-                    <div className={styles.featuredBadge}>
-                      <Star size={10} fill="currentColor" /> Featured
-                    </div>
-                  )}
-
-                  {/* Category Badge */}
-                  <div
-                    className={styles.categoryBadge}
-                    style={{ background: catStyle.bg, border: `1px solid ${catStyle.border}`, color: catStyle.color }}
-                  >
-                    {project.category}
-                  </div>
-
-                  {/* Image Preview Container */}
-                  <div className={styles.imageWrapper}>
-                    <div className={styles.scanline}></div>
-                    <img src={project.image} alt={project.title} className={styles.projectImg} />
-                    <div className={styles.imageOverlay}>
-                      <div className={styles.overlayBtns}>
-                        <button
-                          className={styles.actionCircleBtn}
-                          onClick={() => {
-                            if (soundEnabled) soundManager.playClickSound();
-                            setSelectedProject(project);
-                          }}
-                          title="View Project Details"
-                        >
-                          <Eye size={18} />
-                        </button>
-                        <a
-                          href={project.github}
-                          target="_blank"
-                          rel="noreferrer"
-                          className={styles.actionCircleBtn}
-                          title="View GitHub Repository"
-                        >
-                          <Github size={18} />
-                        </a>
-                        <a
-                          href={project.live}
-                          target="_blank"
-                          rel="noreferrer"
-                          className={styles.actionCircleBtn}
-                          title="Open Live Preview"
-                        >
-                          <ExternalLink size={18} />
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Card Content */}
-                  <div className={styles.cardContent}>
-                    {/* Cyber Status Indicators */}
-                    <div className={styles.cyberStatus}>
-                      <span className={styles.statusDot}></span>
-                      <span>SYS_ACTIVE // AI_COMPILED</span>
-                    </div>
-
-                    <div className={styles.titleRow}>
-                      <Code2 size={20} color="#00f0ff" />
-                      <h3 className={styles.title}>{project.title}</h3>
-                    </div>
-                    <span className={styles.subtitle}>{project.subtitle}</span>
-
-                    <p className={styles.description}>{project.description}</p>
-
-                    {/* Tech Stack Pills */}
-                    <div className={styles.techStack}>
-                      {project.tech.map((t, tIdx) => (
-                        <span key={tIdx} className="badge">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Cyber Watermark */}
-                    <div className={styles.cyberWatermark}>INTELLIGENT_AGENT_CORE_v2.0</div>
-
-                    {/* Action Links */}
-                    <div className={styles.cardFooter}>
-                      <button
-                        className={styles.detailsBtn}
-                        onClick={() => {
-                          if (soundEnabled) soundManager.playClickSound();
-                          setSelectedProject(project);
-                        }}
-                      >
-                        View Details & Features <Sparkles size={14} />
-                      </button>
-                      <div className={styles.footerLinks}>
-                        <a href={project.github} target="_blank" rel="noreferrer" className={styles.footerIconLink} title="GitHub">
-                          <Github size={18} />
-                        </a>
-                        <a href={project.live} target="_blank" rel="noreferrer" className={styles.footerIconLink} title="Live Demo">
-                          <ExternalLink size={18} />
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+            {filtered.map((project, idx) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                idx={idx}
+                onViewDetails={() => setSelectedProject(project)}
+              />
+            ))}
           </motion.div>
         </AnimatePresence>
 
@@ -297,7 +296,7 @@ const Projects = () => {
             href="https://github.com/subham-khandual"
             target="_blank"
             rel="noreferrer"
-            className="btn btn-outline"
+            className={styles.btnOrangeBlueOutline}
             onClick={() => { if (soundEnabled) soundManager.playClickSound(); }}
           >
             <Github size={18} /> View All Projects on GitHub
@@ -332,7 +331,16 @@ const Projects = () => {
                 {(() => {
                   const cs = categoryColors[selectedProject.category] || categoryColors['AI Tool'];
                   return (
-                    <span style={{ background: cs.bg, border: `1px solid ${cs.border}`, color: cs.color, borderRadius: '20px', padding: '0.2rem 0.75rem', fontSize: '0.75rem', fontWeight: '600' }}>
+                    <span style={{ 
+                      background: cs.bg, 
+                      border: `1px solid ${cs.border}`, 
+                      color: cs.color, 
+                      borderRadius: '20px', 
+                      padding: '0.25rem 0.85rem', 
+                      fontSize: '0.75rem', 
+                      fontWeight: '700',
+                      boxShadow: `0 0 12px ${cs.color}44`
+                    }}>
                       {selectedProject.category}
                     </span>
                   );
@@ -347,7 +355,7 @@ const Projects = () => {
                       href={selectedProject.live}
                       target="_blank"
                       rel="noreferrer"
-                      className="btn btn-primary"
+                      className={styles.btnOrangeBlue}
                     >
                       Live Demo <ExternalLink size={16} />
                     </a>
@@ -355,7 +363,7 @@ const Projects = () => {
                       href={selectedProject.github}
                       target="_blank"
                       rel="noreferrer"
-                      className="btn btn-outline"
+                      className={styles.btnOrangeBlueOutline}
                     >
                       Source Code <Github size={16} />
                     </a>
@@ -366,21 +374,21 @@ const Projects = () => {
                   <h3 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#ffffff' }}>
                     {selectedProject.title}
                   </h3>
-                  <p style={{ color: '#00f0ff', fontWeight: '600', marginBottom: '1rem' }}>
+                  <p style={{ color: '#FB923C', fontWeight: '600', marginBottom: '1rem' }}>
                     {selectedProject.subtitle}
                   </p>
 
-                  <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '1.5rem' }}>
+                  <p style={{ color: 'var(--text-secondary)', lineHeight: '1.65', marginBottom: '1.5rem', fontSize: '0.92rem' }}>
                     {selectedProject.description}
                   </p>
 
                   <h4 style={{ color: '#ffffff', fontSize: '1rem', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <Sparkles size={16} color="#00f0ff" /> Key Features & Capabilities:
+                    <Sparkles size={16} color="#F97316" /> Key Features & Capabilities:
                   </h4>
                   <ul className={styles.featuresList}>
                     {selectedProject.features.map((feat, fIdx) => (
                       <li key={fIdx}>
-                        <CheckCircle2 size={16} color="#00f0ff" style={{ minWidth: '16px' }} />
+                        <CheckCircle2 size={16} color="#3B82F6" style={{ minWidth: '16px', marginTop: '2px' }} />
                         <span>{feat}</span>
                       </li>
                     ))}
@@ -391,7 +399,12 @@ const Projects = () => {
                   </h4>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                     {selectedProject.tech.map((t, tIdx) => (
-                      <span key={tIdx} className="badge">
+                      <span key={tIdx} className="badge" style={{ 
+                        borderRadius: '12px',
+                        background: 'rgba(59, 130, 246, 0.08)',
+                        borderColor: 'rgba(59, 130, 246, 0.25)',
+                        color: '#60A5FA'
+                      }}>
                         {t}
                       </span>
                     ))}

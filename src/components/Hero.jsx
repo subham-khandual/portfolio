@@ -142,7 +142,7 @@ const Hero = () => {
               Get In Touch
             </a>
             <a
-              href="/resume.pdf"
+              href="/latest_resume.pdf"
               target="_blank"
               rel="noreferrer"
               className="btn btn-outline"

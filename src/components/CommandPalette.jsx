@@ -78,7 +78,7 @@ const CommandPalette = () => {
       label: 'Download Resume PDF',
       icon: <Download size={18} />,
       perform: () => {
-        window.open('/resume.pdf', '_blank');
+        window.open('/latest_resume.pdf', '_blank');
       }
     }
   ];
