@@ -64,10 +64,10 @@ const Hero = () => {
     <section id="home" className={styles.heroSection}>
       {/* Background Starfield & Floating Glow Orbs */}
       <div className={styles.canvasBackground}>
-        <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
+        <Canvas camera={{ position: [0, 0, 5], fov: 60 }} dpr={[1, 1.5]} performance={{ min: 0.5 }}>
           <ambientLight intensity={0.5} />
           <pointLight position={[10, 10, 10]} intensity={1.5} color="#00f0ff" />
-          <Stars radius={100} depth={50} count={3500} factor={4} saturation={0} fade speed={1.5} />
+          <Stars radius={100} depth={50} count={1800} factor={4} saturation={0} fade speed={1.2} />
         </Canvas>
       </div>
 
@@ -196,7 +196,7 @@ const Hero = () => {
               <Mail size={20} />
             </a>
             <a
-              href="https://wa.me/917847959011"
+              href="https://wa.me/917894047169"
               target="_blank"
               rel="noreferrer"
               aria-label="WhatsApp"

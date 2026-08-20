@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bot, Send, X, Sparkles } from 'lucide-react';
+import { Send, X, Sparkles, Minus } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
 
@@ -53,7 +53,7 @@ Keep responses concise (3–6 sentences max), warm, and helpful. Use emojis occa
    - AI-powered slide generation from text prompts
    - Tech: Python, React, AI APIs, Firebase
 
-4. SuuSri AI Health Assistant — Multilingual Voice AI Companion
+4. Sayraa AI Health Care Assistant — Multilingual Voice AI Companion
    - Voice-enabled health advice in multiple Indian languages
    - Tech: React, NLP, AI APIs, Firebase, Tailwind CSS
 
@@ -84,8 +84,8 @@ Keep responses concise (3–6 sentences max), warm, and helpful. Use emojis occa
 
 // ── Fallback Rule-Based (if Groq API fails) ──────────────────────────
 const getFallbackResponse = (q) => {
-  if (q.includes('project') || q.includes('work') || q.includes('swasthya') || q.includes('suraksha') || q.includes('sayraa') || q.includes('suusri'))
-    return "Subham has built 4 major projects: Suraksha Setu (AI Tourist Safety), Swasthya Setu (Healthcare Hub), Sayraa AI PPT Generator, and SuuSri AI Health Assistant! 🚀";
+  if (q.includes('project') || q.includes('work') || q.includes('swasthya') || q.includes('suraksha') || q.includes('sayraa') || q.includes('suusri') || q.includes('health'))
+    return "Subham has built 4 major projects: Suraksha Setu (AI Tourist Safety), Swasthya Setu (Healthcare Hub), Sayraa AI PPT Generator, and Sayraa AI Health Care Assistant! 🚀";
   if (q.includes('skill') || q.includes('stack') || q.includes('technology'))
     return "Subham's tech stack: React, Node.js, Express, MongoDB, Java, Python, Tailwind CSS, Three.js, Firebase, Git. 🛠️";
   if (q.includes('contact') || q.includes('email') || q.includes('hire'))
@@ -110,7 +110,6 @@ const AiChatbot = () => {
 
   useEffect(() => {
     if (isChatbotOpen) {
-      // Reset to fresh greeting every time chatbot is opened
       setMessages([
         {
           sender: 'bot',
@@ -128,7 +127,67 @@ const AiChatbot = () => {
     }
   }, [messages, isTyping]);
 
-  if (!isChatbotOpen) return null;
+  // Floating Launcher Button when chatbot is closed
+  if (!isChatbotOpen) {
+    return (
+      <motion.button
+        onClick={() => {
+          if (soundEnabled) soundManager.playClickSound();
+          setIsChatbotOpen(true);
+        }}
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0, opacity: 0 }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.92 }}
+        aria-label="Open Sayraa AI Assistant"
+        title="Chat with Sayraa AI"
+        style={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+          width: '58px',
+          height: '58px',
+          borderRadius: '50%',
+          backgroundColor: '#0b0f19',
+          border: '2px solid #00f0ff',
+          boxShadow: '0 0 25px rgba(0, 240, 255, 0.45), 0 10px 30px rgba(0,0,0,0.6)',
+          cursor: 'pointer',
+          zIndex: 999999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 0,
+          overflow: 'hidden',
+        }}
+      >
+        <img
+          src="/chatbot_avatar.png"
+          alt="Sayraa AI Avatar"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'top center',
+          }}
+        />
+        {/* Glowing online pulse indicator */}
+        <span
+          style={{
+            position: 'absolute',
+            bottom: '2px',
+            right: '2px',
+            width: '13px',
+            height: '13px',
+            borderRadius: '50%',
+            backgroundColor: '#10b981',
+            border: '2px solid #0b0f19',
+            boxShadow: '0 0 8px #10b981',
+          }}
+        />
+      </motion.button>
+    );
+  }
 
   // ── Groq API Call ──────────────────────────────────────────────────
   const callGroqAPI = async (userMessage, conversationHistory) => {
@@ -209,6 +268,10 @@ const AiChatbot = () => {
           maxWidth: '390px',
           height: '540px',
           backgroundColor: '#0b0f19',
+          backgroundImage: 'linear-gradient(rgba(7, 11, 20, 0.82), rgba(7, 11, 20, 0.88)), url("/chat_bg.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
           border: '1px solid rgba(0, 240, 255, 0.4)',
           borderRadius: '1.25rem',
           display: 'flex',
@@ -233,18 +296,29 @@ const AiChatbot = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             <div
               style={{
-                width: '38px',
-                height: '38px',
+                width: '42px',
+                height: '42px',
                 borderRadius: '50%',
                 background: 'linear-gradient(135deg, rgba(0,240,255,0.3), rgba(139,92,246,0.3))',
-                border: '1px solid #00f0ff',
+                border: '1.5px solid #00f0ff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#00f0ff',
+                overflow: 'hidden',
+                flexShrink: 0,
+                boxShadow: '0 0 12px rgba(0, 240, 255, 0.35)',
               }}
             >
-              <Bot size={20} />
+              <img
+                src="/chatbot_avatar.png"
+                alt="Sayraa AI Avatar"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'top center',
+                }}
+              />
             </div>
             <div>
               <h4 style={{ color: '#ffffff', fontSize: '0.98rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.35rem', margin: 0 }}>
@@ -253,12 +327,22 @@ const AiChatbot = () => {
               <span style={{ color: '#10b981', fontSize: '0.72rem' }}>● Online — Subham's AI Assistant</span>
             </div>
           </div>
-          <button
-            onClick={() => setIsChatbotOpen(false)}
-            style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', padding: '4px' }}
-          >
-            <X size={20} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button
+              onClick={() => setIsChatbotOpen(false)}
+              title="Minimize Chat"
+              style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+            >
+              <Minus size={18} />
+            </button>
+            <button
+              onClick={() => setIsChatbotOpen(false)}
+              title="Close Chat"
+              style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Messages */}
@@ -280,8 +364,34 @@ const AiChatbot = () => {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
-              style={{ display: 'flex', justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}
+              style={{ display: 'flex', justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start', alignItems: 'flex-start' }}
             >
+              {msg.sender === 'bot' && (
+                <div
+                  style={{
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '50%',
+                    border: '1px solid #00f0ff',
+                    overflow: 'hidden',
+                    flexShrink: 0,
+                    marginRight: '8px',
+                    marginTop: '2px',
+                    boxShadow: '0 0 6px rgba(0, 240, 255, 0.3)',
+                  }}
+                >
+                  <img
+                    src="/chatbot_avatar.png"
+                    alt="Sayraa AI"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      objectPosition: 'top center',
+                    }}
+                  />
+                </div>
+              )}
               <div
                 style={{
                   maxWidth: '84%',
@@ -308,7 +418,27 @@ const AiChatbot = () => {
               animate={{ opacity: 1 }}
               style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 0.6rem', color: '#00f0ff', fontSize: '0.82rem' }}
             >
-              <Bot size={15} />
+              <div
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  border: '1px solid #00f0ff',
+                  overflow: 'hidden',
+                  flexShrink: 0,
+                }}
+              >
+                <img
+                  src="/chatbot_avatar.png"
+                  alt="Sayraa AI"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'top center',
+                  }}
+                />
+              </div>
               <span>Sayraa soch rahi hai</span>
               <span style={{ letterSpacing: '2px' }}>...</span>
             </motion.div>
@@ -400,3 +530,4 @@ const AiChatbot = () => {
 };
 
 export default AiChatbot;
+

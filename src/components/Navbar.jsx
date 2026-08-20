@@ -153,8 +153,13 @@ const Navbar = () => {
               setIsChatbotOpen(true);
             }}
             title="AI Assistant Chatbot"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, overflow: 'hidden' }}
           >
-            <MessageSquare size={18} />
+            <img
+              src="/chatbot_avatar.png"
+              alt="Sayraa AI"
+              style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top center' }}
+            />
           </button>
 
           {/* Mobile Menu Hamburger */}

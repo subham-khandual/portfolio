@@ -1,12 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronUp, Github, Linkedin, Instagram, Facebook, MessageCircle, Heart, Eye } from 'lucide-react';
+import { ChevronUp, Github, Linkedin, Instagram, Facebook, MessageCircle } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
 import styles from './Footer.module.css';
 
 const Footer = () => {
-  const { soundEnabled, visitorCount } = usePortfolio();
+  const { soundEnabled } = usePortfolio();
 
   const scrollToTop = () => {
     if (soundEnabled) soundManager.playClickSound();
@@ -36,7 +36,7 @@ const Footer = () => {
               Subham<span className="text-gradient">.AI</span>
             </span>
             <p className={styles.footerTagline}>
-              Engineering high-performance web applications, 3D interactive experiences, and AI solutions.
+              Engineering modern digital experiences with scalable web technologies, immersive 3D interfaces, and intelligent AI solutions.
             </p>
           </div>
 
@@ -67,7 +67,7 @@ const Footer = () => {
               <Linkedin size={20} />
             </a>
             <a
-              href="https://wa.me/917847959011"
+              href="https://wa.me/917894047169"
               target="_blank"
               rel="noreferrer"
               aria-label="WhatsApp"
@@ -107,13 +107,8 @@ const Footer = () => {
 
         <div className={styles.footerBottom}>
           <p className={styles.copyright}>
-            © {new Date().getFullYear()} Subham Khandual. Designed & Crafted with <Heart size={14} color="#ef4444" style={{ display: 'inline', margin: '0 2px' }} /> & Three.js.
+            © 2026 Subham Khandual. Designed & Crafted with SVG, React & Three.js.
           </p>
-
-          <div className={styles.visitorBadge}>
-            <Eye size={14} color="#00f0ff" />
-            <span>Portfolio Visitors: {visitorCount.toLocaleString()}</span>
-          </div>
 
           {/* Back to Top Button */}
           <button className={styles.backToTopBtn} onClick={scrollToTop} aria-label="Back to Top">

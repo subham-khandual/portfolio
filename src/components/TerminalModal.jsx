@@ -94,7 +94,7 @@ const TerminalModal = () => {
 
       case 'projects':
         newHistory.push({
-          text: `Featured Projects:\n1. Suraksha Setu - AI Smart Tourist Safety Platform\n2. Swasthya Setu - Comprehensive Healthcare Platform\n3. Sayraa AI PPT Generator - Automated AI Presentation Platform\n4. SuuSri AI Health Assistant - Multilingual Voice AI Health Companion`,
+          text: `Featured Projects:\n1. Suraksha Setu - AI Smart Tourist Safety Platform\n2. Swasthya Setu - Comprehensive Healthcare Platform\n3. Sayraa AI PPT Generator - Automated AI Presentation Platform\n4. Sayraa AI Health Care Assistant - Multilingual Voice AI Health Companion`,
           type: 'response',
         });
         break;

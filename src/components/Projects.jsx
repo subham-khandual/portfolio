@@ -65,10 +65,10 @@ const projectsData = [
   },
   {
     id: 'sayraahealth',
-    title: 'SuuSri AI Health Assistant',
+    title: 'Sayraa AI Health Care Assistant',
     subtitle: 'Multilingual Voice AI Health Companion',
     description: 'A voice-enabled healthcare assistant built with React and Groq LLM, providing accessible medical guidance in Odia, Hindi, and English with offline PWA support.',
-    image: '/suusriai.png',
+    image: '/sayraa_healthcare.png',
     category: 'AI Tool',
     featured: false,
     tech: ['React', 'Groq LLM', 'Firebase', 'PWA', 'Web Speech API', 'Tailwind CSS'],

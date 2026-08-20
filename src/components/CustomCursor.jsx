@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 const CustomCursor = () => {
-  const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 });
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+
+  // Use motion values to prevent React re-renders on every mousemove event
+  const rawX = useMotionValue(-100);
+  const rawY = useMotionValue(-100);
+
+  const dotX = useSpring(rawX, { stiffness: 1200, damping: 50, mass: 0.1 });
+  const dotY = useSpring(rawY, { stiffness: 1200, damping: 50, mass: 0.1 });
+
+  const ringX = useSpring(rawX, { stiffness: 300, damping: 28, mass: 0.2 });
+  const ringY = useSpring(rawY, { stiffness: 300, damping: 28, mass: 0.2 });
 
   useEffect(() => {
     // Only show custom cursor on non-touch devices
@@ -13,7 +22,8 @@ const CustomCursor = () => {
     setIsVisible(true);
 
     const onMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      rawX.set(e.clientX);
+      rawY.set(e.clientY);
     };
 
     const onMouseOver = (e) => {
@@ -31,14 +41,14 @@ const CustomCursor = () => {
       }
     };
 
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseover', onMouseOver);
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    window.addEventListener('mouseover', onMouseOver, { passive: true });
 
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseover', onMouseOver);
     };
-  }, []);
+  }, [rawX, rawY]);
 
   if (!isVisible) return null;
 
@@ -47,50 +57,57 @@ const CustomCursor = () => {
       {/* Inner Dot */}
       <motion.div
         className="custom-cursor-dot"
-        animate={{
-          x: mousePosition.x - 4,
-          y: mousePosition.y - 4,
-          scale: isHovered ? 2.5 : 1,
-        }}
-        transition={{ type: 'spring', stiffness: 1000, damping: 50, mass: 0.1 }}
         style={{
           position: 'fixed',
           top: 0,
           left: 0,
+          x: dotX,
+          y: dotY,
+          translateX: '-50%',
+          translateY: '-50%',
           width: '8px',
           height: '8px',
           borderRadius: '50%',
           backgroundColor: '#00f0ff',
           pointerEvents: 'none',
           zIndex: 99999,
-          boxShadow: '0 0 10px #00f0ff, 0 0 20px #00f0ff',
+          boxShadow: '0 0 10px #00f0ff',
+          transformOrigin: 'center center',
         }}
+        animate={{
+          scale: isHovered ? 2.2 : 1,
+        }}
+        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
       />
 
       {/* Outer Ring */}
       <motion.div
         className="custom-cursor-ring"
-        animate={{
-          x: mousePosition.x - 20,
-          y: mousePosition.y - 20,
-          scale: isHovered ? 1.5 : 1,
-          borderColor: isHovered ? '#8b5cf6' : 'rgba(0, 240, 255, 0.4)',
-        }}
-        transition={{ type: 'spring', stiffness: 250, damping: 25, mass: 0.2 }}
         style={{
           position: 'fixed',
           top: 0,
           left: 0,
-          width: '40px',
-          height: '40px',
+          x: ringX,
+          y: ringY,
+          translateX: '-50%',
+          translateY: '-50%',
+          width: '36px',
+          height: '36px',
           borderRadius: '50%',
           border: '1.5px solid rgba(0, 240, 255, 0.4)',
           pointerEvents: 'none',
           zIndex: 99998,
+          transformOrigin: 'center center',
         }}
+        animate={{
+          scale: isHovered ? 1.4 : 1,
+          borderColor: isHovered ? '#8b5cf6' : 'rgba(0, 240, 255, 0.4)',
+        }}
+        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
       />
     </>
   );
 };
 
-export default CustomCursor;
+export default React.memo(CustomCursor);
+
