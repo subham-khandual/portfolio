@@ -128,6 +128,7 @@ const Navbar = () => {
               setIsCommandPaletteOpen(true);
             }}
             title="Command Palette (Ctrl+K)"
+            aria-label="Open Command Palette"
           >
             <Command size={16} />
             <span className={styles.cmdKey}>Ctrl+K</span>
@@ -141,6 +142,7 @@ const Navbar = () => {
               setIsTerminalOpen(true);
             }}
             title="Interactive CLI Terminal"
+            aria-label="Open Interactive CLI Terminal"
           >
             <Terminal size={18} />
           </button>
@@ -153,11 +155,14 @@ const Navbar = () => {
               setIsChatbotOpen(true);
             }}
             title="AI Assistant Chatbot"
+            aria-label="Open Sayraa AI Assistant Chatbot"
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, overflow: 'hidden' }}
           >
             <img
               src="/chatbot_avatar.png"
-              alt="Sayraa AI"
+              alt="Sayraa AI Avatar"
+              loading="lazy"
+              decoding="async"
               style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top center' }}
             />
           </button>

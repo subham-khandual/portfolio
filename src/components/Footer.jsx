@@ -46,7 +46,7 @@ const Footer = () => {
               href="https://github.com/subham-khandual"
               target="_blank"
               rel="noreferrer me"
-              aria-label="GitHub"
+              aria-label="Subham's GitHub Profile"
               className={styles.socialBtn}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
@@ -58,7 +58,7 @@ const Footer = () => {
               href="https://www.linkedin.com/in/subham-khandual/"
               target="_blank"
               rel="noreferrer me"
-              aria-label="LinkedIn"
+              aria-label="Subham's LinkedIn Profile"
               className={styles.socialBtn}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
@@ -70,7 +70,7 @@ const Footer = () => {
               href="https://wa.me/917894047169"
               target="_blank"
               rel="noreferrer"
-              aria-label="WhatsApp"
+              aria-label="Subham's WhatsApp Chat"
               className={styles.socialBtn}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
@@ -82,7 +82,7 @@ const Footer = () => {
               href="https://www.instagram.com/mr_subham7.0?igsh=MTFud3JibGhqbGw4bQ=="
               target="_blank"
               rel="noreferrer me"
-              aria-label="Instagram"
+              aria-label="Subham's Instagram Profile"
               className={styles.socialBtn}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
@@ -94,7 +94,7 @@ const Footer = () => {
               href="https://www.facebook.com/share/1LuEB32wPV/"
               target="_blank"
               rel="noreferrer me"
-              aria-label="Facebook"
+              aria-label="Subham's Facebook Profile"
               className={styles.socialBtn}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();

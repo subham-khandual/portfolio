@@ -273,8 +273,8 @@ const ProjectCard = ({ project, idx, onViewDetails }) => {
                     handleRipple(e);
                     if (soundEnabled) soundManager.playClickSound();
                   }}
-                  title="GitHub Repository"
-                  aria-label="GitHub Repository"
+                  title={`GitHub Repository for ${project.title}`}
+                  aria-label={`GitHub Repository for ${project.title}`}
                 >
                   <Github size={15} />
                 </a>
@@ -288,8 +288,8 @@ const ProjectCard = ({ project, idx, onViewDetails }) => {
                     handleRipple(e);
                     if (soundEnabled) soundManager.playClickSound();
                   }}
-                  title="Live Demo"
-                  aria-label="Live Demo"
+                  title={`Live Demo for ${project.title}`}
+                  aria-label={`Live Demo for ${project.title}`}
                 >
                   <ExternalLink size={15} />
                 </a>

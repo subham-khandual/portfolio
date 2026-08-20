@@ -91,7 +91,7 @@ const About = () => {
             className={styles.cubeSide}
           >
             <div className={styles.cubeCanvasWrapper}>
-              <Canvas camera={{ position: [0, 0, 4.5] }}>
+              <Canvas camera={{ position: [0, 0, 4.5] }} dpr={[1, 1.25]} gl={{ powerPreference: 'high-performance', antialias: false }}>
                 <ambientLight intensity={0.8} />
                 <pointLight position={[10, 10, 10]} intensity={1.5} color="#00f0ff" />
                 <TechCube />

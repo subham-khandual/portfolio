@@ -64,10 +64,10 @@ const Hero = () => {
     <section id="home" className={styles.heroSection}>
       {/* Background Starfield & Floating Glow Orbs */}
       <div className={styles.canvasBackground}>
-        <Canvas camera={{ position: [0, 0, 5], fov: 60 }} dpr={[1, 1.5]} performance={{ min: 0.5 }}>
+        <Canvas camera={{ position: [0, 0, 5], fov: 60 }} dpr={[1, 1.25]} performance={{ min: 0.5 }} gl={{ powerPreference: 'high-performance', antialias: false }}>
           <ambientLight intensity={0.5} />
           <pointLight position={[10, 10, 10]} intensity={1.5} color="#00f0ff" />
-          <Stars radius={100} depth={50} count={1800} factor={4} saturation={0} fade speed={1.2} />
+          <Stars radius={100} depth={50} count={1200} factor={3.5} saturation={0} fade speed={1} />
         </Canvas>
       </div>
 
@@ -165,7 +165,7 @@ const Hero = () => {
               href="https://github.com/subham-khandual"
               target="_blank"
               rel="noreferrer me"
-              aria-label="GitHub"
+              aria-label="Subham's GitHub Profile"
               className={styles.socialIcon}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
@@ -177,7 +177,7 @@ const Hero = () => {
               href="https://www.linkedin.com/in/subham-khandual/"
               target="_blank"
               rel="noreferrer me"
-              aria-label="LinkedIn"
+              aria-label="Subham's LinkedIn Profile"
               className={styles.socialIcon}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
@@ -187,7 +187,7 @@ const Hero = () => {
             </a>
             <a
               href="mailto:subhamkhandual215@gmail.com"
-              aria-label="Email"
+              aria-label="Send Email to Subham"
               className={styles.socialIcon}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
@@ -199,7 +199,7 @@ const Hero = () => {
               href="https://wa.me/917894047169"
               target="_blank"
               rel="noreferrer"
-              aria-label="WhatsApp"
+              aria-label="Chat on WhatsApp"
               className={styles.socialIcon}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
@@ -211,7 +211,7 @@ const Hero = () => {
               href="https://www.instagram.com/mr_subham7.0?igsh=MTFud3JibGhqbGw4bQ=="
               target="_blank"
               rel="noreferrer me"
-              aria-label="Instagram"
+              aria-label="Subham's Instagram Profile"
               className={styles.socialIcon}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
@@ -234,7 +234,7 @@ const Hero = () => {
         >
           <div className={styles.avatarWrapper}>
             <div className={styles.avatarGlow} />
-            <img src="/profile.png" alt="Subham Khandual" className={styles.profileImg} />
+            <img src="/profile.png" alt="Subham Khandual Full-Stack Developer Profile" loading="eager" decoding="async" className={styles.profileImg} />
           </div>
         </motion.div>
       </div>
