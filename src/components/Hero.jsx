@@ -14,6 +14,51 @@ const titles = [
   'Creative Problem Solver',
 ];
 
+const HeroArtwork = () => (
+  <div className={styles.heroArtwork} aria-label="Developer workstation illustration">
+    <div className={`${styles.floatCard} ${styles.cardHtml}`}>HTML</div>
+    <div className={`${styles.floatCard} ${styles.cardCss}`}>{`{}`}</div>
+    <div className={`${styles.floatCard} ${styles.cardJs}`}>JS</div>
+    <div className={`${styles.floatCard} ${styles.cardCode}`}> &lt;/&gt; </div>
+
+    <div className={styles.laptopWrap}>
+      <div className={styles.laptopScreen}>
+        <div className={styles.displayCode}>
+          <span className={styles.codeLine}><span className={styles.pink}>&lt;h1&gt;</span> Build. Secure. <span className={styles.cyan}>/</span> <span className={styles.green}>ideas</span> <span className={styles.pink}>&lt;/h1&gt;</span>
+          <span className={styles.codeLine}><span className={styles.cyan}>const</span> <span className={styles.yellow}>developer</span> = <span className={styles.orange}>{`{`}</span></span>
+          <span className={styles.codeLine}>  focus: <span className={styles.green}'security'</span>,</span>
+          <span className={styles.codeLine}>  passion: <span className={styles.green}'clean code'</span>,</span>
+          <span className={styles.codeLine}>  build: <span className={styles.green}'impact'</span></span>
+          <span className={styles.codeLine}><span className={styles.orange}>{`}`}</span>;</span>
+        </div>
+      </div>
+      <div className={styles.laptopBase} />
+      <div className={styles.keyboard} />
+    </div>
+
+    <div className={styles.plantPotWrap}>
+      <div className={styles.plantLeaves}>
+        <span className={styles.leaf} />
+        <span className={styles.leaf} />
+        <span className={styles.leaf} />
+        <span className={styles.leaf} />
+      </div>
+      <div className={styles.pot} />
+    </div>
+
+    <div className={styles.mugWrap}>
+      <div className={styles.mugHandle} />
+      <div className={styles.mugBody} />
+      <div className={styles.mugLogo}>&lt;/&gt;</div>
+    </div>
+
+    <div className={styles.debugCard}>
+      <span className={styles.debugIcon}>&lt;/&gt;</span>
+      <span className={styles.debugText}>Build Secure</span>
+    </div>
+  </div>
+);
+
 const Hero = () => {
   const { soundEnabled } = usePortfolio();
   const [textIndex, setTextIndex] = useState(0);
@@ -85,8 +130,6 @@ const Hero = () => {
             transform: `translate3d(${mousePos.x * 0.3}px, ${mousePos.y * 0.3}px, 0)`,
           }}
         >
-
-
           <motion.h1
             className={styles.title}
             initial={{ opacity: 0, y: 20 }}
@@ -106,7 +149,7 @@ const Hero = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            Final-year CS Student & Full-Stack Developer passionate about AI-driven innovation, 
+            Final-year CS Student & Full-Stack Developer passionate about AI-driven innovation,
             building 60 FPS high-performance web applications, and delivering world-class digital experiences.
           </motion.p>
 
@@ -222,7 +265,7 @@ const Hero = () => {
           </motion.div>
         </motion.div>
 
-        {/* Right Side 3D Interactive Avatar */}
+        {/* Right Side Illustration */}
         <motion.div
           className={styles.hologramContent}
           initial={{ opacity: 0, scale: 0.8 }}
@@ -232,10 +275,7 @@ const Hero = () => {
             transform: `translate3d(${mousePos.x * -0.4}px, ${mousePos.y * -0.4}px, 0)`,
           }}
         >
-          <div className={styles.avatarWrapper}>
-            <div className={styles.avatarGlow} />
-            <img src="/profile.png" alt="Subham Khandual Full-Stack Developer Profile" loading="eager" decoding="async" className={styles.profileImg} />
-          </div>
+          <HeroArtwork />
         </motion.div>
       </div>
 
