@@ -80,20 +80,11 @@ const Hero = () => {
 
       const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-      tl.from(`.${styles.statusBadge}`, {
+      tl.from(`.${styles.title}`, {
         opacity: 0,
-        y: -15,
-        duration: 0.6,
+        y: 30,
+        duration: 0.8,
       })
-        .from(
-          `.${styles.title}`,
-          {
-            opacity: 0,
-            y: 30,
-            duration: 0.8,
-          },
-          '-=0.3'
-        )
         .from(
           `.${styles.roleLine}`,
           {
@@ -214,12 +205,6 @@ const Hero = () => {
       <div className={`container ${styles.heroContainer}`}>
         {/* ── Left Side Text Content ───────────────────────────────────────── */}
         <motion.div className={styles.textContent} style={{ transform: textParallax }}>
-          {/* Status Badge */}
-          <div className={styles.statusBadge}>
-            <span className={styles.greenDot} />
-            <span>Available for Opportunities</span>
-          </div>
-
           {/* Main Title with Blue Gradient & Underline Accent */}
           <h1 className={styles.title}>
             Hi, I'm <br />
