@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Box, Float, Text, OrbitControls } from '@react-three/drei';
+import { Box, Float, Text, OrbitControls, Edges } from '@react-three/drei';
 import { User, Code, BookOpen, GraduationCap, Award, Rocket, CheckCircle } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
@@ -10,45 +10,65 @@ import styles from './About.module.css';
 // 3D Rotating Tech Cube Component
 function TechCube() {
   const meshRef = useRef();
+  const innerCoreRef = useRef();
 
   useFrame((state, delta) => {
     if (meshRef.current) {
-      meshRef.current.rotation.x += delta * 0.5;
-      meshRef.current.rotation.y += delta * 0.7;
+      meshRef.current.rotation.x += delta * 0.4;
+      meshRef.current.rotation.y += delta * 0.6;
+    }
+    if (innerCoreRef.current) {
+      innerCoreRef.current.rotation.x -= delta * 0.5;
+      innerCoreRef.current.rotation.y += delta * 0.8;
     }
   });
 
   return (
-    <Float speed={2} rotationIntensity={1} floatIntensity={1}>
-      <Box ref={meshRef} args={[2.2, 2.2, 2.2]}>
-        <meshStandardMaterial
-          color="#06b6d4"
-          roughness={0.1}
-          metalness={0.9}
-          wireframe={true}
-          emissive="#8b5cf6"
-          emissiveIntensity={0.5}
-        />
-        {/* Cube Face Text Labels */}
-        <Text position={[0, 0, 1.15]} fontSize={0.35} color="#00f0ff" anchorX="center" anchorY="middle">
+    <Float speed={2} rotationIntensity={0.6} floatIntensity={0.8}>
+      <group ref={meshRef}>
+        {/* Outer Translucent Cyber Cube */}
+        <Box args={[2.2, 2.2, 2.2]}>
+          <meshStandardMaterial
+            color="#0b1728"
+            roughness={0.2}
+            metalness={0.1}
+            transparent={true}
+            opacity={0.7}
+          />
+          <Edges scale={1.002} color="#00f0ff" />
+        </Box>
+
+        {/* Inner Glowing Hologram Core */}
+        <mesh ref={innerCoreRef}>
+          <octahedronGeometry args={[0.9, 0]} />
+          <meshStandardMaterial
+            color="#8b5cf6"
+            emissive="#8b5cf6"
+            emissiveIntensity={0.9}
+            wireframe={true}
+          />
+        </mesh>
+
+        {/* Cube Face Text Labels with Neon Colors */}
+        <Text position={[0, 0, 1.14]} fontSize={0.34} color="#00f0ff" anchorX="center" anchorY="middle">
           REACT.JS
         </Text>
-        <Text position={[0, 0, -1.15]} rotation={[0, Math.PI, 0]} fontSize={0.35} color="#8b5cf6" anchorX="center" anchorY="middle">
+        <Text position={[0, 0, -1.14]} rotation={[0, Math.PI, 0]} fontSize={0.34} color="#8b5cf6" anchorX="center" anchorY="middle">
           NODE.JS
         </Text>
-        <Text position={[1.15, 0, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.35} color="#ec4899" anchorX="center" anchorY="middle">
+        <Text position={[1.14, 0, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.34} color="#ec4899" anchorX="center" anchorY="middle">
           AI / ML
         </Text>
-        <Text position={[-1.15, 0, 0]} rotation={[0, -Math.PI / 2, 0]} fontSize={0.35} color="#10b981" anchorX="center" anchorY="middle">
+        <Text position={[-1.14, 0, 0]} rotation={[0, -Math.PI / 2, 0]} fontSize={0.34} color="#10b981" anchorX="center" anchorY="middle">
           MONGODB
         </Text>
-        <Text position={[0, 1.15, 0]} rotation={[-Math.PI / 2, 0, 0]} fontSize={0.35} color="#f59e0b" anchorX="center" anchorY="middle">
-          JAVA
+        <Text position={[0, 1.14, 0]} rotation={[-Math.PI / 2, 0, 0]} fontSize={0.34} color="#f59e0b" anchorX="center" anchorY="middle">
+          DEVOPS
         </Text>
-        <Text position={[0, -1.15, 0]} rotation={[Math.PI / 2, 0, 0]} fontSize={0.35} color="#00f0ff" anchorX="center" anchorY="middle">
+        <Text position={[0, -1.14, 0]} rotation={[Math.PI / 2, 0, 0]} fontSize={0.34} color="#00f0ff" anchorX="center" anchorY="middle">
           PYTHON
         </Text>
-      </Box>
+      </group>
     </Float>
   );
 }
@@ -91,10 +111,10 @@ const About = () => {
             className={styles.cubeSide}
           >
             <div className={styles.cubeCanvasWrapper}>
-              <Canvas camera={{ position: [0, 0, 4.5] }} dpr={[1, 1.25]} gl={{ powerPreference: 'high-performance', antialias: true }}>
-                <ambientLight intensity={0.9} />
-                <pointLight position={[10, 10, 10]} intensity={1.5} color="#00f0ff" />
-                <pointLight position={[-10, -10, -10]} intensity={1} color="#8b5cf6" />
+              <Canvas camera={{ position: [0, 0, 4.5] }} dpr={[1, 1.25]} gl={{ powerPreference: 'high-performance', antialias: true, alpha: true }}>
+                <ambientLight intensity={0.4} />
+                <pointLight position={[10, 10, 10]} intensity={1.2} color="#00f0ff" />
+                <pointLight position={[-10, -10, -10]} intensity={0.9} color="#8b5cf6" />
                 <TechCube />
                 <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={1.5} />
               </Canvas>

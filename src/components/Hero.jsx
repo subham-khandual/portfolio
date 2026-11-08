@@ -198,8 +198,8 @@ const Hero = () => {
           </h1>
 
           <p className={styles.subtitle}>
-            Engineering intelligent web platforms, AI-powered systems, and scalable cloud solutions.
-            Obsessed with clean architecture, DevOps automation, and ultra-smooth 60 FPS digital experiences.
+            Full-Stack MERN Developer & AI Engineer specializing in scalable web systems,
+            machine learning solutions, and cloud DevOps. Building high-performance, 60 FPS digital experiences that scale.
           </p>
 
           {/* Action CTAs */}
