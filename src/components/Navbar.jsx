@@ -5,26 +5,29 @@ import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
 import styles from './Navbar.module.css';
 
-// Main pill items matching the mockup
+// Main navigation items for the floating capsule
 const mainNavItems = [
   { name: 'Home', href: '#home' },
   { name: 'About', href: '#about' },
-  { name: 'Projects', href: '#projects' },
   { name: 'Skills', href: '#skills' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'Projects', href: '#projects' },
+  { name: 'Experience', href: '#experience' },
+  { name: 'Certificates', href: '#certificates' },
+  { name: 'Achievements', href: '#achievements' },
+  { name: 'Connect', href: '#contact' },
 ];
 
 // All sections for in-page spy & mobile drawer
 const allNavItems = [
   { name: 'Home', href: '#home' },
   { name: 'About', href: '#about' },
-  { name: 'Projects', href: '#projects' },
   { name: 'Skills', href: '#skills' },
+  { name: 'Projects', href: '#projects' },
   { name: 'Experience', href: '#experience' },
+  { name: 'Certificates', href: '#certificates' },
   { name: 'Achievements', href: '#achievements' },
   { name: 'GitHub', href: '#github' },
-  { name: 'Certificates', href: '#certificates' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'Connect', href: '#contact' },
 ];
 
 const Navbar = () => {
