@@ -262,7 +262,7 @@ const About = () => {
                 <h3>Coding Journey & Future Vision</h3>
               </div>
               <p className={styles.cardBody}>
-                My journey began with learning Core Java and algorithms, evolving into building production-ready platforms 
+                My journey began with learning the MERN Stack and algorithms, evolving into building production-ready platforms 
                 like <strong>Swasthya Setu</strong> and <strong>Suraksha Setu</strong>. My goal is to build software that impacts 
                 millions of users, combining elegant UI/UX design with robust backend engineering and AI integration.
               </p>
