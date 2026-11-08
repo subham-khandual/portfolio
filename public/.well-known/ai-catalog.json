@@ -1,0 +1,26 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Subham Khandual Portfolio",
+    "identifier": "did:web:portfolio-nine-alpha-8nkzp7nnk6.vercel.app",
+    "documentationUrl": "https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/",
+    "logoUrl": "https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/favicon.svg"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:portfolio-nine-alpha-8nkzp7nnk6.vercel.app:portfolio:knowledge",
+      "displayName": "Subham Khandual Portfolio Knowledge Base",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/llms.txt",
+      "description": "Machine-readable summary of Subham Khandual's portfolio: profile, skills, featured projects, experience, certifications and contact details.",
+      "tags": ["portfolio", "resume", "full-stack", "mern", "ai", "developer"],
+      "capabilities": ["portfolioKnowledgeLookup", "projectCatalogLookup", "contactLookup"],
+      "representativeQueries": [
+        "Who is Subham Khandual and what does he do?",
+        "What projects has Subham Khandual built with the MERN stack?",
+        "How can I contact Subham Khandual for a full-time role?"
+      ],
+      "version": "1.0.0"
+    }
+  ]
+}

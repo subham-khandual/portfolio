@@ -1,57 +1,20 @@
-import React, { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Sphere, Float } from '@react-three/drei';
-import { Mail, MapPin, Send, MessageCircle, Linkedin, Github, Instagram, Facebook, CheckCircle2 } from 'lucide-react';
+import React, { useState, useRef, Suspense, lazy } from 'react';
+import { motion, useInView } from 'framer-motion';
+import { Mail, MapPin, Send, MessageCircle, CheckCircle2 } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import confetti from 'canvas-confetti';
 import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
 import styles from './Contact.module.css';
 
-// 3D Earth Globe with Location Marker Component
-function EarthGlobe() {
-  const globeRef = useRef();
-
-  useFrame((state, delta) => {
-    if (globeRef.current) {
-      globeRef.current.rotation.y += delta * 0.3;
-    }
-  });
-
-  return (
-    <Float speed={2} rotationIntensity={0.5} floatIntensity={0.8}>
-      <group ref={globeRef}>
-        {/* Globe Sphere */}
-        <Sphere args={[2, 32, 32]}>
-          <meshStandardMaterial
-            color="#0b1329"
-            wireframe={true}
-            emissive="#00f0ff"
-            emissiveIntensity={0.4}
-          />
-        </Sphere>
-        {/* Core Glow Sphere */}
-        <Sphere args={[1.8, 32, 32]}>
-          <meshStandardMaterial
-            color="#8b5cf6"
-            transparent={true}
-            opacity={0.3}
-          />
-        </Sphere>
-        {/* Location Marker Pin over India */}
-        <mesh position={[0.8, 0.9, 1.4]}>
-          <sphereGeometry args={[0.12, 16, 16]} />
-          <meshBasicMaterial color="#ef4444" />
-        </mesh>
-      </group>
-    </Float>
-  );
-}
+// Heavy WebGL bundle — only fetched once the globe is scrolled into view.
+const EarthGlobe = lazy(() => import('./EarthGlobe'));
 
 const Contact = () => {
   const { soundEnabled } = usePortfolio();
-  const formRef = useRef();
+  const globeRef = useRef(null);
+  // Mount the WebGL globe only once the section is reached; pause it when off-screen.
+  const globeVisible = useInView(globeRef, { margin: '0px 0px -15% 0px' });
 
   const [formData, setFormData] = useState({
     name: '',
@@ -98,7 +61,7 @@ const Contact = () => {
       setIsSubmitting(true);
       try {
         // Attempt EmailJS send if service ID configured, otherwise fallback to local API/simulation
-        const result = await emailjs.send(
+        await emailjs.send(
           'YOUR_SERVICE_ID',
           'YOUR_TEMPLATE_ID',
           {
@@ -157,12 +120,10 @@ const Contact = () => {
             viewport={{ once: true }}
             className={styles.globeSide}
           >
-            <div className={styles.globeCanvasWrapper}>
-              <Canvas camera={{ position: [0, 0, 4.5] }}>
-                <ambientLight intensity={0.8} />
-                <pointLight position={[10, 10, 10]} intensity={1.5} color="#00f0ff" />
-                <EarthGlobe />
-              </Canvas>
+            <div className={styles.globeCanvasWrapper} ref={globeRef}>
+              <Suspense fallback={null}>
+                {globeVisible && <EarthGlobe active={globeVisible} />}
+              </Suspense>
               <div className={styles.globeLabel}>📍 Location: Bhubaneswar, Odisha, India</div>
             </div>
 
@@ -178,7 +139,7 @@ const Contact = () => {
                   <Mail size={20} />
                 </div>
                 <div>
-                  <h4>Email Direct</h4>
+                  <h3>Email Direct</h3>
                   <p>subhamkhandual215@gmail.com</p>
                 </div>
               </a>
@@ -196,7 +157,7 @@ const Contact = () => {
                   <MessageCircle size={20} />
                 </div>
                 <div>
-                  <h4>WhatsApp Chat</h4>
+                  <h3>WhatsApp Chat</h3>
                   <p>+91 7894047169</p>
                 </div>
               </a>
@@ -212,7 +173,7 @@ const Contact = () => {
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 5.94 5.94l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                 </div>
                 <div>
-                  <h4>Phone Call</h4>
+                  <h3>Phone Call</h3>
                   <p>+91 7894047169</p>
                 </div>
               </a>
@@ -222,7 +183,7 @@ const Contact = () => {
                   <MapPin size={20} />
                 </div>
                 <div>
-                  <h4>Primary Base</h4>
+                  <h3>Primary Base</h3>
                   <p>Bhubaneswar, Odisha, India</p>
                 </div>
               </div>
@@ -231,7 +192,6 @@ const Contact = () => {
 
           {/* Right Column: Modern Glass Form */}
           <motion.form
-            ref={formRef}
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}

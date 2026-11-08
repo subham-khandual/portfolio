@@ -8,17 +8,61 @@
   overflow: hidden;
 }
 
-.canvasBackground {
+/* GPU-animated CSS starfield (replaces the old WebGL <Canvas> starfield) */
+.starfield {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(0, 240, 255, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 90%, rgba(139, 92, 246, 0.08) 0%, transparent 60%);
 }
 
+.starfield::before,
+.starfield::after {
+  content: '';
+  position: absolute;
+  top: -260px;
+  left: -260px;
+  width: calc(100% + 520px);
+  height: calc(100% + 520px);
+  background-repeat: repeat;
+}
+
+.starfield::before {
+  background-image:
+    radial-gradient(1.6px 1.6px at 40px 60px, rgba(255, 255, 255, 0.9) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 170px 30px, rgba(154, 216, 255, 0.85) 50%, transparent 51%),
+    radial-gradient(1px 1px at 95px 180px, rgba(255, 255, 255, 0.7) 50%, transparent 51%),
+    radial-gradient(1.4px 1.4px at 230px 145px, rgba(255, 255, 255, 0.8) 50%, transparent 51%);
+  background-size: 260px 260px;
+  animation: starDrift 150s linear infinite;
+  will-change: transform;
+}
+
+.starfield::after {
+  background-image:
+    radial-gradient(1px 1px at 70px 110px, rgba(0, 240, 255, 0.55) 50%, transparent 51%),
+    radial-gradient(0.9px 0.9px at 210px 60px, rgba(139, 92, 246, 0.5) 50%, transparent 51%),
+    radial-gradient(1.2px 1.2px at 140px 220px, rgba(255, 255, 255, 0.45) 50%, transparent 51%);
+  background-size: 340px 340px;
+  animation: starDrift 260s linear infinite reverse;
+  will-change: transform;
+}
+
+@keyframes starDrift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-260px, -260px, 0); }
+}
+
+/* NOTE: fixed pixel offsets (not %) so the blobs never move when the section
+   height changes (percentage offsets were the main Cumulative Layout Shift cause). */
 .glowBlob1 {
   position: absolute;
-  top: 15%;
-  left: 10%;
+  top: 120px;
+  left: 8%;
   width: 450px;
   height: 450px;
   background: radial-gradient(circle, rgba(0, 240, 255, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
@@ -29,8 +73,8 @@
 
 .glowBlob2 {
   position: absolute;
-  bottom: 15%;
-  right: 10%;
+  bottom: 80px;
+  right: 8%;
   width: 450px;
   height: 450px;
   background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%);

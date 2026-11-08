@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
-import { ExternalLink, Github, Sparkles, CheckCircle2, X, Code2, Layers, Star } from 'lucide-react';
+import { ExternalLink, Github, Sparkles, CheckCircle2, Code2, Layers, Star } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
 import { usePrefersReducedMotion, useDeviceType } from '../hooks/useTilt';
 import { soundManager } from '../utils/audio';
@@ -13,7 +13,7 @@ const projectsData = [
     title: 'Suraksha Setu',
     subtitle: 'AI Smart Tourist Safety Platform',
     description: 'A critical tourist security ecosystem with interactive real-time mapping, emergency SOS triggers, QR digital IDs, and centralized incident management.',
-    image: '/surakshasetu.png',
+    image: '/surakshasetu.webp',
     category: 'Full-Stack MERN',
     featured: true,
     tech: ['React', 'Node.js', 'Express.js', 'MongoDB', 'TypeScript', 'AI Chatbot'],
@@ -32,12 +32,12 @@ const projectsData = [
     title: 'Swasthya Setu',
     subtitle: 'Comprehensive Healthcare Platform',
     description: 'A complete medical service hub offering rapid first aid response, blood bank tracking, instant doctor video consultations, and AI healthcare chat.',
-    image: '/swasthyasetu.png',
+    image: '/swasthyasetu.webp',
     category: 'Full-Stack MERN',
     featured: true,
     tech: ['React', 'Node.js', 'Express.js', 'MongoDB', 'AI Chatbot', 'Tailwind CSS'],
-    github: 'https://github.com/subham-khandual/swasthyasetu',
-    live: 'https://swasthyasetu-tsbt.vercel.app',
+    github: 'https://github.com/subham-khandual/swasthya-setu',
+    live: 'https://frontend-five-khaki-22.vercel.app',
     features: [
       'Integrated Sayraa Healthcare Chatbot for instant diagnosis',
       'Real-time blood bank availability locator',
@@ -50,7 +50,7 @@ const projectsData = [
     title: 'Sayraa AI PPT Generator',
     subtitle: 'Automated AI Presentation Platform',
     description: 'An intelligent presentation generator creating structured, beautifully designed PowerPoint slides from custom topics powered by Groq and Gemini AI models.',
-    image: '/sayraaai.png',
+    image: '/sayraaai.webp',
     category: 'AI Tool',
     featured: false,
     tech: ['Python', 'Flask', 'Gemini AI', 'Groq AI', 'Bootstrap'],
@@ -64,21 +64,22 @@ const projectsData = [
     ]
   },
   {
-    id: 'sayraahealth',
-    title: 'Sayraa AI Health Care Assistant',
-    subtitle: 'Multilingual Voice AI Health Companion',
-    description: 'A voice-enabled healthcare assistant built with React and Groq LLM, providing accessible medical guidance in Odia, Hindi, and English with offline PWA support.',
-    image: '/sayraa_healthcare.png',
+    id: 'envistream-eduskill-chatbot',
+    title: 'Envistream Eduskill Chatbot',
+    subtitle: 'AI-Powered Educational Chatbot',
+    description: 'An interactive education assistant built to help learners access study resources, answer academic queries, and get guided learning support through a conversational AI interface.',
+    image: '/envistream-eduskill-chatbot.webp',
     category: 'AI Tool',
     featured: false,
-    tech: ['React', 'Groq LLM', 'Firebase', 'PWA', 'Web Speech API', 'Tailwind CSS'],
-    github: 'https://github.com/subham-khandual/sayraa-health-care-ai-assistant',
-    live: 'https://sayraa-health-care-ai-assistant.vercel.app/',
+    tech: ['React', 'Node.js', 'Express.js', 'MongoDB', 'AI Chatbot', 'JavaScript'],
+    github: 'https://github.com/subham-khandual/Envistream-chatbot',
+    live: 'https://envistream-chatbot.vercel.app/',
     features: [
-      'Multilingual voice recognition (Odia, Hindi, English)',
-      'Groq LLM ultra-fast medical advice response',
-      'Progressive Web App (PWA) installable on mobile',
-      'Firebase cloud conversation history'
+      'Conversational AI interface for instant educational Q&A',
+      'Study resource discovery and guided learning support',
+      'Interactive Eduskill-focused chatbot experience',
+      'Responsive UI with smooth conversational flow',
+      'Seamless deployment-ready full-stack chatbot platform'
     ]
   }
 ];
@@ -90,44 +91,61 @@ const categoryColors = {
   'AI Tool':         { bg: 'rgba(251, 146, 60, 0.08)', border: 'rgba(251, 146, 60, 0.35)', color: '#FB923C' },
 };
 
+// Deterministic pseudo-random generator so the decorative particles are stable
+// across renders (keeps components pure and avoids visual flicker). Generated
+// once at module load and frozen for the session.
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const STARS = (() => {
+  const rand = mulberry32(20260717);
+  return Array.from({ length: 45 }, (_, i) => {
+    const type = i % 4;
+    let color = '#ffffff';
+    let size = rand() * 1.5 + 0.5;
+    let blur = 0;
+    let opacity = rand() * 0.4 + 0.15;
+
+    if (type === 1) {
+      color = '#FF6B00';
+      size = rand() * 2.5 + 1.2;
+      opacity = rand() * 0.45 + 0.2;
+    } else if (type === 2) {
+      color = '#38BDF8';
+      size = rand() * 2.5 + 1.2;
+      opacity = rand() * 0.45 + 0.2;
+    } else if (type === 3) {
+      color = i % 2 === 0 ? '#FF8A1F' : '#2563EB';
+      size = rand() * 22 + 10;
+      blur = rand() * 4 + 3;
+      opacity = rand() * 0.08 + 0.03;
+    }
+
+    return {
+      id: i,
+      top: `${rand() * 100}%`,
+      left: `${rand() * 100}%`,
+      size,
+      color,
+      blur,
+      opacity,
+      delay: rand() * 6,
+      duration: rand() * 12 + 6,
+    };
+  });
+})();
+
 // Cinematic floating particles (Sparks, Orange and Blue dust, blurred bokeh circles)
 const StarBackground = React.memo(() => {
-  const stars = React.useMemo(() => {
-    return Array.from({ length: 45 }, (_, i) => {
-      const type = i % 4;
-      let color = '#ffffff';
-      let size = Math.random() * 1.5 + 0.5;
-      let blur = 0;
-      let opacity = Math.random() * 0.4 + 0.15;
-      
-      if (type === 1) {
-        color = '#FF6B00';
-        size = Math.random() * 2.5 + 1.2;
-        opacity = Math.random() * 0.45 + 0.2;
-      } else if (type === 2) {
-        color = '#38BDF8';
-        size = Math.random() * 2.5 + 1.2;
-        opacity = Math.random() * 0.45 + 0.2;
-      } else if (type === 3) {
-        color = i % 2 === 0 ? '#FF8A1F' : '#2563EB';
-        size = Math.random() * 22 + 10;
-        blur = Math.random() * 4 + 3;
-        opacity = Math.random() * 0.08 + 0.03;
-      }
-      
-      return {
-        id: i,
-        top: `${Math.random() * 100}%`,
-        left: `${Math.random() * 100}%`,
-        size,
-        color,
-        blur,
-        opacity,
-        delay: Math.random() * 6,
-        duration: Math.random() * 12 + 6,
-      };
-    });
-  }, []);
+  const stars = STARS;
 
   return (
     <div className={styles.starContainer}>
@@ -349,7 +367,7 @@ const Projects = () => {
 
               <div className={styles.modalGrid}>
                 <div className={styles.modalImageSide}>
-                  <img src={selectedProject.image} alt={selectedProject.title} className={styles.modalImg} />
+                  <img src={selectedProject.image} alt={selectedProject.title} className={styles.modalImg} loading="lazy" decoding="async" />
                   <div className={styles.modalActionRow}>
                     <a
                       href={selectedProject.live}

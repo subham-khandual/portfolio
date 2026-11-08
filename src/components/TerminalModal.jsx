@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, X, Minimize2, Maximize2 } from 'lucide-react';
+import { Terminal, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
 
 const TerminalModal = () => {
-  const { isTerminalOpen, setIsTerminalOpen, toggleTheme, soundEnabled } = usePortfolio();
+  const { isTerminalOpen, setIsTerminalOpen, soundEnabled } = usePortfolio();
   const [input, setInput] = useState('');
   const [history, setHistory] = useState([
     { text: 'Subham OS [Version 10.0.2027] - Subham Khandual Interactive Terminal', type: 'system' },
@@ -94,7 +94,7 @@ const TerminalModal = () => {
 
       case 'projects':
         newHistory.push({
-          text: `Featured Projects:\n1. Suraksha Setu - AI Smart Tourist Safety Platform\n2. Swasthya Setu - Comprehensive Healthcare Platform\n3. Sayraa AI PPT Generator - Automated AI Presentation Platform\n4. Sayraa AI Health Care Assistant - Multilingual Voice AI Health Companion`,
+          text: `Featured Projects:\n1. Suraksha Setu - AI Smart Tourist Safety Platform\n2. Swasthya Setu - Comprehensive Healthcare Platform\n3. Sayraa AI PPT Generator - Automated AI Presentation Platform\n4. Sayraa AI Health Care Assistant - Multilingual Voice AI Health Companion\n5. Envistream Eduskill Chatbot - AI-Powered Educational Chatbot`,
           type: 'response',
         });
         break;
@@ -200,6 +200,8 @@ const TerminalModal = () => {
             </div>
             <button
               onClick={() => setIsTerminalOpen(false)}
+              type="button"
+              aria-label="Close interactive terminal"
               style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer' }}
             >
               <X size={18} />
@@ -237,6 +239,7 @@ const TerminalModal = () => {
             <input
               type="text"
               autoFocus
+              aria-label="Terminal command input"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="type command..."

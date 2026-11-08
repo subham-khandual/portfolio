@@ -100,7 +100,9 @@
 
 .org {
   font-size: 0.85rem;
-  color: var(--text-muted);
+  /* Lightened so the text still clears 4.5:1 contrast on the dimmed
+     (opacity .7 + blur) neighbouring carousel cards. */
+  color: #b9c0cc;
 }
 
 .viewBtn {
@@ -153,24 +155,43 @@
 .indicators {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 0.5rem;
   margin-top: 2rem;
 }
 
+/* 24x24 tap targets (Lighthouse "target-size") with a 10px visual dot inside. */
 .indicator {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+}
+
+.indicator::before {
+  content: '';
+  display: block;
   width: 10px;
   height: 10px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  cursor: pointer;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.35);
   transition: all 0.2s ease;
 }
 
-.activeIndicator {
-  background: var(--accent-blue);
+.indicator:hover::before {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.activeIndicator::before {
   width: 24px;
-  border-radius: 9999px;
+  background: var(--accent-blue);
   box-shadow: 0 0 10px #00f0ff;
 }
 

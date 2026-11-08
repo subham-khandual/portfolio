@@ -1,0 +1,31 @@
+# Subham Khandual — Full-Stack MERN & AI Developer Portfolio
+
+> Portfolio of Subham Khandual, a Full-Stack MERN & AI developer based in Bhubaneswar, Odisha, India.
+> The site showcases featured projects, technical skills, experience, certifications, achievements and contact details.
+
+## Primary pages and sections
+
+- [Home / Hero](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#home): Introduction, role, resume download and social profiles.
+- [About](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#about): Background, education and engineering focus.
+- [Skills](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#skills): Frontend, backend, database, language and tooling proficiency.
+- [Projects](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#projects): Suraksha Setu, Swasthya Setu, Sayraa AI PPT Generator, Sayraa AI Health Care Assistant and Envistream Eduskill Chatbot.
+- [Experience](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#experience): Professional and internship timeline.
+- [Achievements](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#achievements): Projects shipped, repositories, certifications, hackathons and DSA problems solved.
+- [GitHub](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#github): Open-source repositories and statistics.
+- [Certificates](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#certificates): CTTC and NPTEL certifications with verified credential links.
+- [Contact](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#contact): Direct message form, email, WhatsApp and location.
+
+## Key project links
+
+- [Suraksha Setu — AI Smart Tourist Safety Platform](https://suraksha-setu-oxkw.vercel.app)
+- [Swasthya Setu — Comprehensive Healthcare Platform](https://frontend-five-khaki-22.vercel.app)
+- [Sayraa AI PPT Generator](https://ppt-generator-seven-mu.vercel.app)
+- [Sayraa AI Health Care Assistant](https://sayraa-health-care-ai-assistant.vercel.app)
+- [Envistream Eduskill Chatbot](https://envistream-chatbot.vercel.app/)
+- [GitHub profile](https://github.com/subham-khandual)
+- [LinkedIn profile](https://www.linkedin.com/in/subham-khandual/)
+
+## Contact
+
+- Email: subhamkhandual215@gmail.com
+- WhatsApp: https://wa.me/917894047169

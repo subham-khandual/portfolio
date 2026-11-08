@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Text, Float } from '@react-three/drei';
-import { Code2, Server, Database, Terminal, Wrench, Sparkles } from 'lucide-react';
+import React, { useState, useRef, Suspense, lazy } from 'react';
+import { motion, useInView } from 'framer-motion';
 import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
 import styles from './Skills.module.css';
+
+// Heavy WebGL bundle — only fetched once the sphere is scrolled into view.
+const SkillsSphere = lazy(() => import('./SkillsSphere'));
 
 const allSkillsList = [
   { name: 'HTML5', category: 'Frontend', level: '95%', color: '#e34f26' },
@@ -28,53 +28,15 @@ const allSkillsList = [
   { name: 'AI & ML', category: 'AI & Tools', level: '84%', color: '#8b5cf6' },
 ];
 
-// 3D Interactive Sphere Tag Cloud Component
-function SkillsSphere({ skills }) {
-  const groupRef = useRef();
-
-  useFrame((state, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.25;
-      groupRef.current.rotation.x += delta * 0.15;
-    }
-  });
-
-  const count = skills.length;
-  const radius = 2.4;
-
-  return (
-    <group ref={groupRef}>
-      {skills.map((skill, i) => {
-        // Sphere point distribution using Golden Ratio
-        const phi = Math.acos(-1 + (2 * i) / count);
-        const theta = Math.sqrt(count * Math.PI) * phi;
-        const x = radius * Math.cos(theta) * Math.sin(phi);
-        const y = radius * Math.sin(theta) * Math.sin(phi);
-        const z = radius * Math.cos(phi);
-
-        return (
-          <Float key={skill.name} speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-            <Text
-              position={[x, y, z]}
-              fontSize={0.28}
-              color={skill.color || '#00f0ff'}
-              anchorX="center"
-              anchorY="middle"
-            >
-              {skill.name}
-            </Text>
-          </Float>
-        );
-      })}
-    </group>
-  );
-}
-
 const categories = ['All', 'Frontend', 'Backend', 'Database', 'Languages', 'AI & Tools'];
 
 const Skills = () => {
   const { soundEnabled } = usePortfolio();
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const sphereRef = useRef(null);
+  // Mount the canvas only once it has been reached, and pause the render loop
+  // whenever the sphere scrolls back out of the viewport.
+  const sphereVisible = useInView(sphereRef, { margin: '0px 0px -15% 0px' });
 
   const filteredSkills =
     selectedCategory === 'All'
@@ -121,16 +83,15 @@ const Skills = () => {
         <div className={styles.skillsMainGrid}>
           {/* Left Column: 3D Interactive Tag Cloud Sphere Canvas */}
           <motion.div
+            ref={sphereRef}
             className={styles.sphereWrapper}
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
-              <ambientLight intensity={1} />
-              <pointLight position={[10, 10, 10]} intensity={1.5} color="#00f0ff" />
-              <SkillsSphere skills={filteredSkills} />
-            </Canvas>
+            <Suspense fallback={<div className={styles.spherePlaceholder} />}>
+              {sphereVisible && <SkillsSphere skills={filteredSkills} active={sphereVisible} />}
+            </Suspense>
             <div className={styles.sphereHint}>Interactive 3D Sphere - Auto Rotating</div>
           </motion.div>
 

@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
+// Custom cursor is purely decorative — hidden until the first real mouse move,
+// so touch devices and SSR never see it.
+const isFinePointerDevice = () =>
+  typeof window !== 'undefined' &&
+  typeof window.matchMedia === 'function' &&
+  !window.matchMedia('(pointer: coarse)').matches;
+
 const CustomCursor = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -16,18 +23,22 @@ const CustomCursor = () => {
   const ringY = useSpring(rawY, { stiffness: 300, damping: 28, mass: 0.2 });
 
   useEffect(() => {
-    // Only show custom cursor on non-touch devices
-    if (window.matchMedia('(pointer: coarse)').matches) return;
-
-    setIsVisible(true);
+    if (!isFinePointerDevice()) return undefined;
 
     const onMouseMove = (e) => {
       rawX.set(e.clientX);
       rawY.set(e.clientY);
+      // Reveal on first genuine pointer movement instead of a synchronous
+      // setState in the effect body.
+      setIsVisible((prev) => (prev ? prev : true));
     };
 
     const onMouseOver = (e) => {
       const target = e.target;
+      if (!(target instanceof Element)) {
+        setIsHovered(false);
+        return;
+      }
       if (
         target.tagName === 'A' ||
         target.tagName === 'BUTTON' ||

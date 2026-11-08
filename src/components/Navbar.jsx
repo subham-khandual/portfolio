@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Terminal, MessageSquare, Sun, Moon, Volume2, VolumeX, Sparkles, Command } from 'lucide-react';
+import { Menu, X, Terminal, MessageSquare, Command } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
 import styles from './Navbar.module.css';
@@ -19,10 +19,7 @@ const navItems = [
 
 const Navbar = () => {
   const {
-    theme,
-    toggleTheme,
     soundEnabled,
-    setSoundEnabled,
     activeSection,
     setActiveSection,
     setIsCommandPaletteOpen,
@@ -159,7 +156,7 @@ const Navbar = () => {
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, overflow: 'hidden' }}
           >
             <img
-              src="/chatbot_avatar.png"
+              src="/chatbot_avatar.webp"
               alt="Sayraa AI Avatar"
               loading="lazy"
               decoding="async"

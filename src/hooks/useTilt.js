@@ -1,22 +1,24 @@
 import { useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 
+const getDeviceType = () => {
+  if (typeof window === 'undefined') return 'desktop';
+  const width = window.innerWidth;
+  if (width < 768) return 'mobile';
+  if (width < 1024) return 'tablet';
+  return 'desktop';
+};
+
 export function useDeviceType() {
-  const [device, setDevice] = useState('desktop');
+  // Lazy initializer reads the viewport during render so the effect only
+  // subscribes to changes (no synchronous setState in the effect body).
+  const [device, setDevice] = useState(getDeviceType);
 
   useEffect(() => {
     const handleResize = () => {
-      const width = window.innerWidth;
-      if (width < 768) {
-        setDevice('mobile');
-      } else if (width < 1024) {
-        setDevice('tablet');
-      } else {
-        setDevice('desktop');
-      }
+      setDevice(getDeviceType());
     };
-    
-    handleResize();
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -25,11 +27,16 @@ export function useDeviceType() {
 }
 
 export function usePrefersReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  // Lazy initializer so the effect below only subscribes to changes.
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setPrefersReducedMotion(mediaQuery.matches);
 
     const handleChange = (e) => {
       setPrefersReducedMotion(e.matches);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Star, GitFork, BookOpen, Code } from 'lucide-react';
+import { Star, GitFork, BookOpen, Code, Github } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
 import styles from './GithubSection.module.css';
@@ -15,12 +15,12 @@ const repos = [
     url: 'https://github.com/subham-khandual/Suraksha-Setu',
   },
   {
-    name: 'swasthyasetu',
+    name: 'swasthya-setu',
     description: 'Comprehensive healthcare platform featuring Sayraa Healthcare Chatbot, doctor booking, & blood availability tracking.',
     stars: 6,
     forks: 2,
     language: 'JavaScript',
-    url: 'https://github.com/subham-khandual/swasthyasetu',
+    url: 'https://github.com/subham-khandual/swasthya-setu',
   },
   {
     name: 'ppt-generator',
@@ -46,7 +46,10 @@ const GithubSection = () => {
   return (
     <section id="github" className={styles.githubSection}>
       <div className="container">
-        {/* GitHub Stats Card */}
+        {/* GitHub Stats Card.
+            Rendered locally on purpose: the third-party github-readme-stats
+            image used here returned HTTP 503, which logged a console error and
+            failed the Lighthouse "Best Practices" audit. */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '3.5rem' }}>
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -55,14 +58,24 @@ const GithubSection = () => {
             className={`${styles.statBannerCard} glass-card`}
             style={{ maxWidth: '600px', width: '100%' }}
           >
-            <img
-              src="https://github-readme-stats.vercel.app/api?username=subham-khandual&show_icons=true&theme=dark&bg_color=0b0f19&title_color=00f0ff&icon_color=8b5cf6&text_color=d1d5db&border_color=00f0ff33"
-              alt="Subham's GitHub Stats"
-              className={styles.bannerImg}
-              onError={(e) => {
-                e.target.style.display = 'none';
-              }}
-            />
+            <div className={styles.statBannerHeader}>
+              <Github size={18} color="#00f0ff" aria-hidden="true" />
+              <span>github.com/subham-khandual</span>
+            </div>
+            <div className={styles.statBannerGrid}>
+              <div className={styles.statItem}>
+                <strong>25+</strong>
+                <span>Repositories</span>
+              </div>
+              <div className={styles.statItem}>
+                <strong>8+</strong>
+                <span>Stars Earned</span>
+              </div>
+              <div className={styles.statItem}>
+                <strong>6</strong>
+                <span>Languages Used</span>
+              </div>
+            </div>
           </motion.div>
         </div>
 

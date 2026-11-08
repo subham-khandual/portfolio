@@ -53,6 +53,14 @@
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
 }
 
+.spherePlaceholder {
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.12) 0%, transparent 60%),
+    radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 45%);
+}
+
 .sphereHint {
   position: absolute;
   bottom: 1rem;

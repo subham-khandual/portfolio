@@ -1,125 +1,214 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Canvas } from '@react-three/fiber';
-import { Stars } from '@react-three/drei';
-import { ArrowRight, Download, Github, Linkedin, Mail, Sparkles, MessageCircle, Instagram, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { gsap } from 'gsap';
+import { useGSAP } from '@gsap/react';
+import { ArrowRight, Download, Github, Linkedin, Mail, MessageCircle, Instagram, ChevronDown } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
+import HeroCanvas3D from './HeroCanvas3D';
 import styles from './Hero.module.css';
 
 const titles = [
   'Full Stack MERN Developer',
   'AI & ML Specialist',
+  'DevOps & Cloud Enthusiast',
   'Software Engineer',
   'Creative Problem Solver',
 ];
 
-const Hero = () => {
-  const { soundEnabled } = usePortfolio();
+/**
+ * Rotating typewriter roles.
+ *
+ * Isolated in its own component on purpose: the previous implementation kept the
+ * typing state inside `Hero`, so every keystroke (~every 100 ms) re-rendered the
+ * whole hero, including the WebGL canvas. Now only this small subtree updates.
+ */
+const TypedRoles = () => {
   const [textIndex, setTextIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  const [typingSpeed, setTypingSpeed] = useState(100);
-
-  // Mouse Parallax
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      const { innerWidth, innerHeight } = window;
-      setMousePos({
-        x: (e.clientX / innerWidth - 0.5) * 30,
-        y: (e.clientY / innerHeight - 0.5) * 30,
-      });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+    const current = titles[textIndex];
+    let delay = isDeleting ? 45 : 95;
+    if (!isDeleting && displayText === current) delay = 1600;
+    else if (isDeleting && displayText === '') delay = 320;
 
-  // Typing effect
-  useEffect(() => {
-    const handleTyping = () => {
-      const current = titles[textIndex];
-      if (!isDeleting) {
-        setDisplayText(current.substring(0, displayText.length + 1));
-        if (displayText === current) {
-          setTimeout(() => setIsDeleting(true), 1800);
-          setTypingSpeed(50);
-        }
-      } else {
-        setDisplayText(current.substring(0, displayText.length - 1));
-        if (displayText === '') {
-          setIsDeleting(false);
-          setTextIndex((prev) => (prev + 1) % titles.length);
-          setTypingSpeed(100);
-        }
+    const timer = setTimeout(() => {
+      if (!isDeleting && displayText === current) {
+        setIsDeleting(true);
+        return;
       }
-    };
+      if (isDeleting && displayText === '') {
+        setIsDeleting(false);
+        setTextIndex((prev) => (prev + 1) % titles.length);
+        return;
+      }
+      setDisplayText(current.substring(0, displayText.length + (isDeleting ? -1 : 1)));
+    }, delay);
 
-    const timer = setTimeout(handleTyping, typingSpeed);
     return () => clearTimeout(timer);
-  }, [displayText, isDeleting, textIndex, typingSpeed]);
+  }, [displayText, isDeleting, textIndex]);
 
   return (
-    <section id="home" className={styles.heroSection}>
-      {/* Background Starfield & Floating Glow Orbs */}
-      <div className={styles.canvasBackground}>
-        <Canvas camera={{ position: [0, 0, 5], fov: 60 }} dpr={[1, 1.25]} performance={{ min: 0.5 }} gl={{ powerPreference: 'high-performance', antialias: false }}>
-          <ambientLight intensity={0.5} />
-          <pointLight position={[10, 10, 10]} intensity={1.5} color="#00f0ff" />
-          <Stars radius={100} depth={50} count={1200} factor={3.5} saturation={0} fade speed={1} />
-        </Canvas>
-      </div>
+    <span className={styles.typedContainer}>
+      I am a <span className={styles.typedText}>{displayText}</span>
+      <span className={styles.cursor}>|</span>
+    </span>
+  );
+};
 
-      <div className={styles.glowBlob1} />
-      <div className={styles.glowBlob2} />
+const Hero = () => {
+  const { soundEnabled } = usePortfolio();
+  const heroRef = useRef(null);
+
+  // GSAP Entrance Timeline
+  useGSAP(
+    () => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+      tl.from(`.${styles.title}`, {
+        opacity: 0,
+        y: 35,
+        duration: 0.9,
+      })
+        .from(
+          `.${styles.subtitle}`,
+          {
+            opacity: 0,
+            y: 25,
+            duration: 0.8,
+          },
+          '-=0.4'
+        )
+        .from(
+          `.${styles.actionBtns} a`,
+          {
+            opacity: 0,
+            y: 20,
+            scale: 0.95,
+            stagger: 0.12,
+            duration: 0.6,
+            ease: 'back.out(1.5)',
+          },
+          '-=0.3'
+        )
+        .from(
+          `.${styles.socialIcon}`,
+          {
+            opacity: 0,
+            scale: 0.6,
+            stagger: 0.08,
+            duration: 0.5,
+            ease: 'back.out(2)',
+          },
+          '-=0.3'
+        )
+        .from(
+          `.${styles.avatarWrapper}`,
+          {
+            opacity: 0,
+            scale: 0.85,
+            duration: 1,
+            ease: 'power2.out',
+          },
+          '-=0.8'
+        );
+    },
+    { scope: heroRef }
+  );
+
+  // GSAP Magnetic button hover effect
+  const handleMagneticMove = (e) => {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    const target = e.currentTarget;
+    const rect = target.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    gsap.to(target, {
+      x: x * 0.28,
+      y: y * 0.28,
+      duration: 0.3,
+      ease: 'power2.out',
+    });
+  };
+
+  const handleMagneticLeave = (e) => {
+    gsap.to(e.currentTarget, {
+      x: 0,
+      y: 0,
+      duration: 0.6,
+      ease: 'elastic.out(1, 0.4)',
+    });
+  };
+
+  // Mouse parallax driven by motion values: no React re-render on pointer move.
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const smoothX = useSpring(rawX, { stiffness: 60, damping: 20, mass: 0.4 });
+  const smoothY = useSpring(rawY, { stiffness: 60, damping: 20, mass: 0.4 });
+  const textParallax = useTransform(
+    [smoothX, smoothY],
+    ([x, y]) => `translate3d(${x * 0.3}px, ${y * 0.3}px, 0)`
+  );
+  const hologramParallax = useTransform(
+    [smoothX, smoothY],
+    ([x, y]) => `translate3d(${x * -0.4}px, ${y * -0.4}px, 0)`
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    // Skip pointer work on touch devices and when reduced motion is requested.
+    if (window.matchMedia('(pointer: coarse)').matches) return undefined;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+
+    let frame = null;
+    const handleMouseMove = (e) => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = null;
+        rawX.set((e.clientX / window.innerWidth - 0.5) * 30);
+        rawY.set((e.clientY / window.innerHeight - 0.5) * 30);
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [rawX, rawY]);
+
+  return (
+    <section id="home" ref={heroRef} className={styles.heroSection}>
+      {/* Background starfield (GPU animated CSS — no WebGL, no extra JS) */}
+      <div className={styles.starfield} aria-hidden="true" />
+
+      <div className={styles.glowBlob1} aria-hidden="true" />
+      <div className={styles.glowBlob2} aria-hidden="true" />
 
       <div className={`container ${styles.heroContainer}`}>
         {/* Left Side Text Content */}
-        <motion.div
-          className={styles.textContent}
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          style={{
-            transform: `translate3d(${mousePos.x * 0.3}px, ${mousePos.y * 0.3}px, 0)`,
-          }}
-        >
-
-
-          <motion.h1
-            className={styles.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
+        <motion.div className={styles.textContent} style={{ transform: textParallax }}>
+          <h1 className={styles.title}>
             Hi, I'm <span className="text-gradient">Subham Khandual</span> <br />
-            <span className={styles.typedContainer}>
-              I am a <span className={styles.typedText}>{displayText}</span>
-              <span className={styles.cursor}>|</span>
-            </span>
-          </motion.h1>
+            <TypedRoles />
+          </h1>
 
-          <motion.p
-            className={styles.subtitle}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            Final-year CS Student & Full-Stack Developer passionate about AI-driven innovation, 
-            building 60 FPS high-performance web applications, and delivering world-class digital experiences.
-          </motion.p>
+          <p className={styles.subtitle}>
+            Engineering intelligent web platforms, AI-powered systems, and scalable cloud solutions.
+            Obsessed with clean architecture, DevOps automation, and ultra-smooth 60 FPS digital experiences.
+          </p>
 
           {/* Action CTAs */}
-          <motion.div
-            className={styles.actionBtns}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
+          <div className={styles.actionBtns}>
             <a
               href="#projects"
               className="btn btn-primary"
+              onMouseMove={handleMagneticMove}
+              onMouseLeave={handleMagneticLeave}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
               }}
@@ -132,6 +221,8 @@ const Hero = () => {
             <a
               href="#contact"
               className="btn btn-outline"
+              onMouseMove={handleMagneticMove}
+              onMouseLeave={handleMagneticLeave}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
               }}
@@ -146,21 +237,18 @@ const Hero = () => {
               target="_blank"
               rel="noreferrer"
               className="btn btn-outline"
+              onMouseMove={handleMagneticMove}
+              onMouseLeave={handleMagneticLeave}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
               }}
             >
               Resume PDF <Download size={18} />
             </a>
-          </motion.div>
+          </div>
 
           {/* Social Icons */}
-          <motion.div
-            className={styles.socials}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-          >
+          <div className={styles.socials}>
             <a
               href="https://github.com/subham-khandual"
               target="_blank"
@@ -219,22 +307,24 @@ const Hero = () => {
             >
               <Instagram size={20} />
             </a>
-          </motion.div>
+          </div>
         </motion.div>
 
-        {/* Right Side 3D Interactive Avatar */}
-        <motion.div
-          className={styles.hologramContent}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          style={{
-            transform: `translate3d(${mousePos.x * -0.4}px, ${mousePos.y * -0.4}px, 0)`,
-          }}
-        >
+        {/* Right Side Profile Hologram */}
+        <motion.div className={styles.hologramContent} style={{ transform: hologramParallax }}>
           <div className={styles.avatarWrapper}>
-            <div className={styles.avatarGlow} />
-            <img src="/profile.png" alt="Subham Khandual Full-Stack Developer Profile" loading="eager" decoding="async" className={styles.profileImg} />
+            <div className={styles.avatarGlow} aria-hidden="true" />
+            <HeroCanvas3D />
+            <img
+              src="/profile.webp"
+              alt="Subham Khandual Full-Stack Developer Profile"
+              width="512"
+              height="512"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              className={styles.profileImg}
+            />
           </div>
         </motion.div>
       </div>
@@ -242,10 +332,12 @@ const Hero = () => {
       {/* Animated Scroll Down Indicator */}
       <a href="#about" className={styles.scrollIndicator} aria-label="Scroll Down">
         <span className={styles.scrollText}>Scroll Down</span>
-        <ChevronDown size={20} className={styles.scrollIcon} />
+        <ChevronDown size={20} className={styles.scrollIcon} aria-hidden="true" />
       </a>
     </section>
   );
 };
 
 export default Hero;
+
+

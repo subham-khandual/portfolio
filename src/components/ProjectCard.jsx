@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect } from 'react';
 import { motion, useTransform } from 'framer-motion';
 import { ExternalLink, Github, Eye, Sparkles, Code2, Star } from 'lucide-react';
 import { useTilt, useDeviceType, usePrefersReducedMotion } from '../hooks/useTilt';
@@ -91,6 +91,19 @@ const ProjectCard = ({ project, idx, onViewDetails }) => {
 
   const catStyle = categoryColors[project.category] || categoryColors['AI Tool'];
 
+  // Hooks must run unconditionally — derive the spotlight CSS vars here so the
+  // hook order is identical on every render.
+  const spotlightX = useTransform(mouseXPercent, (v) => `${v}%`);
+  const spotlightY = useTransform(mouseYPercent, (v) => `${v}%`);
+  useEffect(() => {
+    if (!tiltRef.current) return;
+    tiltRef.current.style.setProperty('--mx', `${mouseXPercent.get()}%`);
+    tiltRef.current.style.setProperty('--my', `${mouseYPercent.get()}%`);
+    const unsubX = spotlightX.on('change', (v) => tiltRef.current?.style.setProperty('--mx', v));
+    const unsubY = spotlightY.on('change', (v) => tiltRef.current?.style.setProperty('--my', v));
+    return () => { unsubX(); unsubY(); };
+  }, [tiltRef, mouseXPercent, mouseYPercent, spotlightX, spotlightY]);
+
   return (
     <motion.div
       className={styles.cardOuter}
@@ -121,8 +134,6 @@ const ProjectCard = ({ project, idx, onViewDetails }) => {
             rotateX: isHovered ? rotateX : 0,
             rotateY: isHovered ? rotateY : 0,
             transformStyle: "preserve-3d",
-            '--mx': mouseXPercent ? useTransform(mouseXPercent, (v) => `${v}%`) : '50%',
-            '--my': mouseYPercent ? useTransform(mouseYPercent, (v) => `${v}%`) : '50%',
           }}
           whileHover={prefersReducedMotion ? {} : {
             y: -6,
@@ -155,7 +166,7 @@ const ProjectCard = ({ project, idx, onViewDetails }) => {
             style={{ transform: "translateZ(20px)" }}
           >
             <div className={styles.scanline} />
-            <img src={project.image} alt={project.title} className={styles.projectImg} loading="lazy" />
+            <img src={project.image} alt={project.title} className={styles.projectImg} loading="lazy" decoding="async" />
             <div className={styles.shine} />
             
             {/* Overlay Interactive Buttons */}

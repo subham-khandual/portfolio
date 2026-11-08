@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ExternalLink, Award, Eye, X } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
@@ -11,7 +11,7 @@ const certificatesData = [
     title: 'Artificial Intelligence & Machine Learning',
     org: 'Central Tool Room & Training Centre (CTTC), Bhubaneswar',
     date: '2025',
-    image: 'https://drive.google.com/thumbnail?id=1S1H5dVqldlJWOVjcBYHotxZfsXd_jIak&sz=w1000',
+    image: '/cttc-aiml-cert.webp',
     link: 'https://drive.google.com/file/d/1S1H5dVqldlJWOVjcBYHotxZfsXd_jIak/view?usp=sharing'
   },
   {
@@ -19,7 +19,7 @@ const certificatesData = [
     title: 'Core Java Application Development',
     org: 'Central Tool Room & Training Centre (CTTC), Bhubaneswar',
     date: '2024',
-    image: 'https://drive.google.com/thumbnail?id=1iROJnRaemmaoR6Hs9LDEW-kcuGk_X2Od&sz=w1000',
+    image: '/cttc-java-cert.webp',
     link: 'https://drive.google.com/file/d/1iROJnRaemmaoR6Hs9LDEW-kcuGk_X2Od/view?usp=sharing'
   },
   {
@@ -27,7 +27,7 @@ const certificatesData = [
     title: 'Programming in Java',
     org: 'NPTEL (IIT Kharagpur) - Score: 55%',
     date: '2024',
-    image: '/java-certificate.png',
+    image: '/java-certificate.webp',
     link: 'https://drive.google.com/file/d/1bHwePdthZxv-TLBczLNetwMqFLSoQJQx/view?usp=sharing'
   },
   {
@@ -35,7 +35,7 @@ const certificatesData = [
     title: 'Industry 4.0 & Industrial Internet of Things',
     org: 'NPTEL (IIT Kharagpur) - Score: 67%',
     date: '2025',
-    image: '/iiot.png',
+    image: '/iiot.webp',
     link: 'https://drive.google.com/file/d/1_0UBUT9-EZlX2F_JgBuF-_eSvMaS0uOQ/view?usp=sharing'
   },
   {
@@ -43,7 +43,7 @@ const certificatesData = [
     title: 'Privacy and Security in Online Social Media',
     org: 'NPTEL (IIIT Hyderabad) - Score: 54%',
     date: '2025',
-    image: '/privacy.png',
+    image: '/privacy.webp',
     link: 'https://drive.google.com/file/d/1h5TgH-huiZN7Hr_x95uaiidFim28wSgz/view?usp=sharing'
   }
 ];
@@ -54,6 +54,10 @@ const Certificates = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [previewCert, setPreviewCert] = useState(null);
   const timerRef = useRef(null);
+  const sectionRef = useRef(null);
+  // Autoplay only while the gallery is actually on screen — the previous version
+  // re-animated five 3D-transformed cards every 3.5s even when scrolled far away.
+  const inView = useInView(sectionRef, { margin: '0px 0px -10% 0px' });
 
   const nextSlide = () => {
     setIndex((prev) => (prev + 1) % certificatesData.length);
@@ -64,16 +68,16 @@ const Certificates = () => {
   };
 
   useEffect(() => {
-    if (!isHovered && !previewCert) {
+    if (inView && !isHovered && !previewCert) {
       timerRef.current = setInterval(nextSlide, 3500);
     } else {
       clearInterval(timerRef.current);
     }
     return () => clearInterval(timerRef.current);
-  }, [isHovered, previewCert]);
+  }, [inView, isHovered, previewCert]);
 
   return (
-    <section id="certificates" className={styles.certSection}>
+    <section id="certificates" className={styles.certSection} ref={sectionRef}>
       <div className="container">
         {/* Section Header */}
         <motion.div
@@ -129,15 +133,18 @@ const Certificates = () => {
                 >
                   <div className={styles.cardImageWrapper}>
                     <Award size={48} className={styles.placeholderIcon} />
-                    <img
-                      src={cert.image}
-                      alt={cert.title}
-                      className={styles.certImage}
-                      referrerPolicy="no-referrer"
-                      onError={(e) => {
-                        e.target.style.opacity = '0';
-                      }}
-                    />
+                    {cert.image && (
+                      <img
+                        src={cert.image}
+                        alt={cert.title}
+                        className={styles.certImage}
+                        loading="lazy"
+                        decoding="async"
+                        onError={(e) => {
+                          e.target.style.opacity = '0';
+                        }}
+                      />
+                    )}
                     <div className={styles.imageHoverOverlay}>
                       <Eye size={24} color="#00f0ff" />
                       <span>Click to Zoom</span>
@@ -189,10 +196,13 @@ const Certificates = () => {
 
         {/* Indicators */}
         <div className={styles.indicators}>
-          {certificatesData.map((_, i) => (
+          {certificatesData.map((cert, i) => (
             <button
-              key={i}
+              key={cert.id}
+              type="button"
               className={`${styles.indicator} ${i === index ? styles.activeIndicator : ''}`}
+              aria-label={`Show certificate ${i + 1} of ${certificatesData.length}: ${cert.title}`}
+              aria-current={i === index ? 'true' : undefined}
               onClick={() => {
                 if (soundEnabled) soundManager.playClickSound();
                 setIndex(i);
@@ -213,15 +223,23 @@ const Certificates = () => {
               exit={{ opacity: 0, scale: 0.85 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button className={styles.closeLightbox} onClick={() => setPreviewCert(null)}>
+              <button
+                className={styles.closeLightbox}
+                onClick={() => setPreviewCert(null)}
+                type="button"
+                aria-label="Close certificate preview"
+              >
                 <X size={20} />
               </button>
-              <img
-                src={previewCert.image}
-                alt={previewCert.title}
-                className={styles.lightboxImg}
-                referrerPolicy="no-referrer"
-              />
+              {previewCert.image && (
+                <img
+                  src={previewCert.image}
+                  alt={previewCert.title}
+                  className={styles.lightboxImg}
+                  loading="lazy"
+                  decoding="async"
+                />
+              )}
               <div className={styles.lightboxDetails}>
                 <h4>{previewCert.title}</h4>
                 <p>{previewCert.org} - {previewCert.date}</p>

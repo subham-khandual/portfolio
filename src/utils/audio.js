@@ -132,7 +132,7 @@ class SoundSystem {
     try {
       if (this.ambientOsc) {
         this.ambientOsc.forEach((osc) => {
-          try { osc.stop(); } catch (err) {}
+          try { osc.stop(); } catch { /* already stopped — safe to ignore */ }
         });
         this.ambientOsc = null;
       }

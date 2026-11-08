@@ -1,13 +1,29 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, X, Sparkles, Minus } from 'lucide-react';
+import { Send, X, Sparkles, Minus, Mic, Volume2, VolumeX } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
+import {
+  speakSayraa,
+  stopSayraaSpeaking,
+  playListenChime,
+  createHinglishRecognizer,
+  isVoiceInputSupported,
+  onSayraaSpeakingChange,
+} from '../utils/sayraaVoice';
 
-// ── Groq API Config ─────────────────────────────────────────────────
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
+// ── Gemini API Config ────────────────────────────────────────────────
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
+// Fastest-first fallback chain — if one model fails (rate limit / empty reply),
+// the next one is tried automatically (same strategy as the EduSkill Sayraa).
+const GEMINI_MODELS = [
+  'gemini-flash-lite-latest',
+  'gemini-3.5-flash-lite',
+  'gemini-3.1-flash-lite',
+  'gemini-3.5-flash',
+  'gemini-2.5-flash',
+];
 
 // ── Sayraa System Prompt ─────────────────────────────────────────────
 const SYSTEM_PROMPT = `You are Sayraa, the personal AI assistant for Subham Khandual's portfolio website. You are friendly, warm, intelligent, and highly knowledgeable.
@@ -15,12 +31,11 @@ const SYSTEM_PROMPT = `You are Sayraa, the personal AI assistant for Subham Khan
 Your primary mission is to analyze and answer queries about Subham Khandual's RESUME, projects, tech stack, tools, professional experience, education, key achievements, certifications, and contact info.
 Do NOT answer unrelated off-topic questions (weather, general politics, sports, entertainment, complex math, etc.). For off-topic queries, politely redirect the user back to Subham's portfolio and resume.
 
-LANGUAGE RULE (CRITICAL): Detect the user's language and respond in the SAME language:
-- English → respond in English
-- Hinglish (Hindi + English mix) → respond in Hinglish
-- Odia (ଓଡ଼ିଆ) → respond in Odia
-- Hindi (हिंदी) → respond in Hindi
-- Any other language → mirror that language
+LANGUAGE RULE (CRITICAL): Sayraa ALWAYS replies in HINGLISH — Hindi written in Roman (English) letters mixed with natural English words. Whatever language the user uses (English, Hindi, Hinglish, Odia or any other language), Sayraa's reply is ALWAYS in Hinglish:
+- NEVER reply in pure English, pure Hindi, Odia or any other language
+- NEVER use Devanagari (हिंदी) script — always Roman letters (e.g. "kaise ho aap", NOT "कैसे हो आप")
+- Keep technical terms in English inside the Hinglish sentences (React, Node.js, API, MERN)
+- Example reply: "Suraksha Setu ek AI tourist safety platform hai jisme emergency SOS aur QR digital ID hai 😊"
 
 Keep answers clear, well-structured, warm, and helpful (use bullet points or emojis when listing details).
 
@@ -61,7 +76,7 @@ Subham Khandual is a Full-Stack MERN & AI Developer based in Bhubaneswar, Odisha
 - Programming Languages: Java (88%), Python (85%), C Language (80%), JavaScript (92%).
 - Developer Tools & Platforms: Git (90%), GitHub (92%), VS Code (95%), Postman (88%), Vercel, Progressive Web Apps (PWA).
 
-🚀 FEATURED PROJECTS (4 Major Applications)
+🚀 FEATURED PROJECTS (5 Major Applications)
 1. Suraksha Setu (AI Smart Tourist Safety Platform) [Full-Stack MERN + AI]
    - Description: Tourist security ecosystem with real-time safety alerts, emergency SOS, QR digital IDs, and centralized command dashboard.
    - Key Capabilities: 1-tap SOS alerts to police & contacts, live hazard mapping, digital QR tourist ID, integrated AI assistant.
@@ -82,6 +97,11 @@ Subham Khandual is a Full-Stack MERN & AI Developer based in Bhubaneswar, Odisha
    - Key Capabilities: Multilingual voice recognition (Odia, Hindi, English), Groq LLM fast medical advice, PWA installable mobile support, cloud chat sync.
    - Tech Tools: React, Groq LLM, Firebase, PWA, Web Speech API, Tailwind CSS.
 
+5. Envistream Eduskill Chatbot (AI-Powered Educational Chatbot) [AI Tool]
+   - Description: Interactive education chatbot with conversational AI for Q&A, study resource discovery, and guided learning support.
+   - Key Capabilities: Conversational AI interface for instant educational Q&A, study resource discovery and guided learning support, responsive UI with smooth conversational flow.
+   - Tech Tools: React, Node.js, Express.js, MongoDB, AI Chatbot, JavaScript.
+
 🏆 CERTIFICATIONS & ACADEMIC CREDENTIALS
 1. AI & Machine Learning Certification — CTTC Bhubaneswar (2025)
 2. Core Java Application Development Certification — CTTC Bhubaneswar (2024)
@@ -96,9 +116,26 @@ Subham Khandual is a Full-Stack MERN & AI Developer based in Bhubaneswar, Odisha
 - 10+ Hackathons & Coding Competitions
 - 500+ Solved Algorithmic & DSA Problems (LeetCode, CodeChef, NPTEL)
 
+🔗 PROJECT LINKS (share ONLY when the user asks for the link / live demo / code / repo / GitHub / website):
+- Suraksha Setu → Live: https://suraksha-setu-oxkw.vercel.app | Code: https://github.com/subham-khandual/Suraksha-Setu
+- Swasthya Setu → Live: https://frontend-five-khaki-22.vercel.app | Code: https://github.com/subham-khandual/swasthya-setu
+- Sayraa AI PPT Generator → Live: https://ppt-generator-seven-mu.vercel.app | Code: https://github.com/subham-khandual/ppt-generator
+- Sayraa AI Health Care Assistant → Live: https://sayraa-health-care-ai-assistant.vercel.app | Code: https://github.com/subham-khandual/sayraa-health-care-ai-assistant
+- Envistream Eduskill Chatbot → Live: https://envistream-chatbot.vercel.app/ | Code: https://github.com/subham-khandual/Envistream-chatbot
+
+🎙️ VOICE RULES (CRITICAL — Sayraa's answers are also SPOKEN aloud via TTS in a sweet female Hinglish voice):
+- Keep every answer short and conversational (2-4 short lines max) — long paragraphs sound bad as speech.
+- NEVER use markdown symbols (asterisks, hashes, backticks) or raw URLs in answers — they sound broken when spoken. Describe links in words; give the raw URL only when explicitly asked.
+- Emojis are fine on screen (they are removed from speech automatically).
+- VOICE INPUT: user messages often come from a speech recognizer and contain PHONETIC spelling mistakes (e.g. "surakchha setu" = Suraksha Setu, "swastya setu" = Swasthya Setu, "subhaam khandwal" = Subham Khandual, "prorescts dikhao" = projects dikhao). Silently understand the intended meaning and answer normally — never correct the user.
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`;
 
-// ── Fallback Rule-Based (if Groq API fails) ──────────────────────────
+// ── Sayraa's short Hinglish welcome line (shown + SPOKEN sweetly on open) ──
+const WELCOME_TEXT =
+  "Namaste! 🙏 Mein hun Sayraa — Subham ki AI assistant. Projects, skills ya contact — jo poochna hai, bol ke ya likh ke poochho! 😊";
+
+// ── Fallback Rule-Based (if Gemini API fails) ────────────────────────
 const getFallbackResponse = (q) => {
   if (q.includes('resume') || q.includes('cv') || q.includes('summary') || q.includes('overview') || q.includes('profile'))
     return "📄 **Subham Khandual's Resume Summary:**\n• B.Tech CS Student (2023–2027) at GIFT Autonomous, Bhubaneswar.\n• Full-Stack MERN & AI Developer with 2 CTTC internships (AI/ML & Core Java).\n• Creator of 15+ projects including Suraksha Setu & Swasthya Setu.\n• Tech Stack: React, Node.js, MongoDB, Java, Python, Tailwind, Firebase, Git.\n• 500+ coding problems solved & 5+ certifications!";
@@ -119,7 +156,7 @@ const getFallbackResponse = (q) => {
     return "🛠️ **Tools & Tech Stack:**\n• **Frontend:** React.js, Tailwind CSS, HTML5, CSS3, JavaScript, Three.js\n• **Backend:** Node.js, Express.js, Python, Flask, REST APIs\n• **Databases:** MongoDB, MySQL, Firebase Firestore\n• **Tools:** Git, GitHub, VS Code, Postman, Vercel, PWA";
 
   if (q.includes('project') || q.includes('swasthya') || q.includes('suraksha') || q.includes('sayraa') || q.includes('ppt') || q.includes('health'))
-    return "🚀 **Subham's 4 Major Projects:**\n1. **Suraksha Setu:** AI Tourist Safety platform with Emergency SOS & QR Tourist IDs.\n2. **Swasthya Setu:** Comprehensive healthcare hub featuring **Sayraa Healthcare Chatbot**, doctor booking & blood bank locator.\n3. **Sayraa AI PPT Generator:** AI PowerPoint slide generator powered by Groq & Gemini AI.\n4. **Sayraa AI Health Care Assistant:** Multilingual Voice AI health companion (Odia, Hindi, English).";
+    return "🚀 **Subham's 5 Major Projects:**\n1. **Suraksha Setu:** AI Tourist Safety platform with Emergency SOS & QR Tourist IDs → suraksha-setu-oxkw.vercel.app\n2. **Swasthya Setu:** Healthcare hub with **Sayraa Healthcare Chatbot**, doctor booking & blood bank locator → frontend-five-khaki-22.vercel.app\n3. **Sayraa AI PPT Generator:** AI PowerPoint slide generator powered by Groq & Gemini AI → ppt-generator-seven-mu.vercel.app\n4. **Sayraa AI Health Care Assistant:** Multilingual Voice AI health companion (Odia, Hindi, English) → sayraa-health-care-ai-assistant.vercel.app\n5. **Envistream Eduskill Chatbot:** AI-powered educational chatbot for study Q&A & guided learning → envistream-chatbot.vercel.app\nKisi ek project ki detail chahiye? 😊";
 
   if (q.includes('contact') || q.includes('email') || q.includes('hire') || q.includes('phone') || q.includes('whatsapp') || q.includes('linkedin') || q.includes('github'))
     return "📧 **Contact Subham:**\n• Email: subhamkhandual215@gmail.com\n• Phone / WhatsApp: +91 7894047169\n• LinkedIn: linkedin.com/in/subham-khandual\n• GitHub: github.com/subham-khandual";
@@ -130,28 +167,70 @@ const getFallbackResponse = (q) => {
 // ── Component ─────────────────────────────────────────────────────────
 const AiChatbot = () => {
   const { isChatbotOpen, setIsChatbotOpen, soundEnabled } = usePortfolio();
-  const [messages, setMessages] = useState([
-    {
-      sender: 'bot',
-      text: "Namaste! 🙏 Mein hun Sayraa, Subham ki AI assistant. Mein aapki kya madad kar sakti hun? Aap mujhse Subham ke projects, skills, education ya contact ke baare mein pooch sakte hain — English, Hinglish ya Odia (ଓଡ଼ିଆ) mein!",
-    },
-  ]);
+  const [messages, setMessages] = useState([{ sender: 'bot', text: WELCOME_TEXT }]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  // ── 🎙️ Voice assistant state ────────────────────────────────────────
+  const [isListening, setIsListening] = useState(false);
+  const [interimText, setInterimText] = useState('');
+  const [voiceOn, setVoiceOn] = useState(() => {
+    try { return localStorage.getItem('sayraaVoiceOn') !== 'off'; } catch { return true; }
+  });
+  // 🎬 "Video-style" avatar: true while Sayraa's voice is actually playing
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const chatEndRef = useRef(null);
+  const isListeningRef = useRef(false);
+  const recognizerRef = useRef(null);
+  const greetedRef = useRef(false);
+  const voiceOnRef = useRef(voiceOn);
 
+  // Speak a bot reply aloud with Sayraa's sweet female Hinglish voice.
+  // Sayraa ALWAYS replies in Hinglish — English, Hindi ya mix, sabmein Hinglish!
+  // voiceOnRef keeps the latest mute state visible inside stable callbacks.
+  const speakBotReply = (text, opts = {}) => {
+    if (!voiceOnRef.current || !text) return;
+    speakSayraa(text, {
+      lang: 'hinglish',
+      append: opts.append === true,
+      sweet: opts.sweet === true,
+    });
+  };
+
+  // Drive the animated avatar from the real speech engine state
+  useEffect(() => onSayraaSpeakingChange(setIsSpeaking), []);
+
+  // ── Open / close lifecycle ─────────────────────────────────────────
   useEffect(() => {
     if (isChatbotOpen) {
-      setMessages([
-        {
-          sender: 'bot',
-          text: "Namaste! 🙏 Mein hun Sayraa, Subham ki AI assistant. Mein aapki kya madad kar sakti hun? Aap mujhse Subham ke projects, skills, education ya contact ke baare mein pooch sakte hain — English, Hinglish ya Odia (ଓଡ଼ିଆ) mein!",
-        },
-      ]);
+      setMessages([{ sender: 'bot', text: WELCOME_TEXT }]);
       setInput('');
       setIsTyping(false);
+      // 🎙️ Greet with Sayraa's sweet voice ONCE per open (guarded so React
+      // StrictMode's double effect pass in dev never says hello twice).
+      if (!greetedRef.current) {
+        greetedRef.current = true;
+        // 🎙️💗 Sweet female Hinglish greeting voice (extra-sweet delivery)
+        speakBotReply(WELCOME_TEXT, { sweet: true });
+      }
+    } else {
+      // Minimized / closed → stop talking, release the mic, reset the guard
+      greetedRef.current = false;
+      stopSayraaSpeaking();
+      if (recognizerRef.current) {
+        recognizerRef.current.abort();
+        recognizerRef.current = null;
+      }
+      isListeningRef.current = false;
+      setIsListening(false);
+      setInterimText('');
     }
   }, [isChatbotOpen]);
+
+  // Unmount safety: never leave TTS or the mic running
+  useEffect(() => () => {
+    stopSayraaSpeaking();
+    if (recognizerRef.current) recognizerRef.current.abort();
+  }, []);
 
   useEffect(() => {
     if (chatEndRef.current) {
@@ -194,7 +273,7 @@ const AiChatbot = () => {
         }}
       >
         <img
-          src="/chatbot_avatar.png"
+          src="/chatbot_avatar.webp"
           alt="Sayraa AI Avatar"
           style={{
             width: '100%',
@@ -221,67 +300,287 @@ const AiChatbot = () => {
     );
   }
 
-  // ── Groq API Call ──────────────────────────────────────────────────
-  const callGroqAPI = async (userMessage, conversationHistory) => {
-    const groqMessages = [
-      { role: 'system', content: SYSTEM_PROMPT },
-      ...conversationHistory
-        .filter(m => m.sender !== 'bot' || conversationHistory.indexOf(m) > 0)
-        .slice(-8) // last 8 messages for context window
-        .map(m => ({
-          role: m.sender === 'user' ? 'user' : 'assistant',
-          content: m.text,
+  // ── Gemini API Call (SSE streaming + model fallback chain) ──────────
+  // Sayraa always answers in HINGLISH. Each finished sentence is spoken aloud
+  // while the rest is still streaming (progressive speech), so she starts
+  // talking almost immediately instead of waiting for the full answer.
+  const callGeminiAPI = async (userMessage, historyMessages, { onChunk } = {}) => {
+    if (!GEMINI_API_KEY) throw new Error('VITE_GEMINI_API_KEY missing from .env');
+
+    // Build Gemini `contents` from the chat history. The greeting (first bot
+    // message) is skipped so the conversation always starts with a user turn.
+    // Keep only the last 8 messages — latency grows with prompt size.
+    const contents = [
+      ...historyMessages
+        .filter((m, i) => !(m.sender === 'bot' && i === 0))
+        .slice(-8)
+        .map((m) => ({
+          role: m.sender === 'user' ? 'user' : 'model',
+          parts: [{ text: m.text }],
         })),
-      { role: 'user', content: userMessage },
+      {
+        role: 'user',
+        parts: [{
+          text: `${userMessage}\n\n(IMPORTANT: Apna pura jawab SIRF HINGLISH mein do — Hindi words Roman letters mein. Devanagari ya pure English bilkul nahi.)`,
+        }],
+      },
     ];
 
-    const response = await fetch(GROQ_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${GROQ_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        messages: groqMessages,
-        max_tokens: 300,
-        temperature: 0.7,
-      }),
-    });
+    const body = {
+      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+      contents,
+      generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
+    };
 
-    if (!response.ok) {
-      throw new Error(`Groq API error: ${response.status}`);
+    const apiUrl = (model, method) =>
+      `${GEMINI_API_URL}/${encodeURIComponent(model)}:${method}?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+
+    // Thinking models also emit hidden "thought" parts — never show/speak those.
+    const partsToText = (candidate) =>
+      (candidate?.content?.parts ?? [])
+        .filter((p) => p.text && !p.thought)
+        .map((p) => p.text)
+        .join('');
+
+    let lastError = '';
+
+    for (const model of GEMINI_MODELS) {
+      try {
+        // ---- Streaming first: first words appear + speak almost instantly ----
+        const res = await fetch(`${apiUrl(model, 'streamGenerateContent')}&alt=sse`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          lastError = `${model} → HTTP ${res.status}`;
+          continue;
+        }
+        if (res.body && typeof res.body.getReader === 'function') {
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+          let text = '';
+
+          for (;;) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+
+            let nl;
+            while ((nl = buffer.indexOf('\n')) !== -1) {
+              const line = buffer.slice(0, nl).trim();
+              buffer = buffer.slice(nl + 1);
+              if (!line.startsWith('data:')) continue;
+              const payload = line.slice(5).trim();
+              if (!payload || payload === '[DONE]') continue;
+              try {
+                const json = JSON.parse(payload);
+                const chunk = partsToText(json.candidates?.[0]);
+                if (chunk) {
+                  text += chunk;
+                  if (onChunk) onChunk(text);
+                }
+              } catch {
+                // Ignore a partial JSON line — the rest arrives in the next chunk.
+              }
+            }
+          }
+          if (text.trim()) return text.trim();
+          lastError = `${model} → empty stream`;
+          continue;
+        }
+
+        // ---- No ReadableStream support → plain (non-streaming) call ----------
+        const res2 = await fetch(apiUrl(model, 'generateContent'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!res2.ok) {
+          lastError = `${model} → HTTP ${res2.status}`;
+          continue;
+        }
+        const data = await res2.json();
+        const text = partsToText(data.candidates?.[0]).trim();
+        if (text) return text;
+        lastError = `${model} → empty reply`;
+      } catch (err) {
+        lastError = `${model} → ${err?.message || String(err)}`;
+      }
     }
-
-    const data = await response.json();
-    return data.choices?.[0]?.message?.content?.trim() || null;
+    throw new Error(`All Gemini models failed — ${lastError}`);
   };
 
-  // ── Handle Send ────────────────────────────────────────────────────
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || isTyping) return;
+  // ── Core send (used by BOTH typed input and 🎙️ voice input) ────────
+  const sendUserMessage = async (rawText) => {
+    const userText = (rawText || '').trim();
+    if (!userText || isTyping) return;
 
     if (soundEnabled) soundManager.playClickSound();
 
-    const userText = input.trim();
+    // Sayraa ALWAYS replies in Hinglish — text and voice both.
     const updatedMessages = [...messages, { sender: 'user', text: userText }];
     setMessages(updatedMessages);
     setInput('');
     setIsTyping(true);
 
+    // ---- Progressive display + progressive speech ----
+    // The reply bubble appears as soon as the first words stream in, and each
+    // finished sentence is SPOKEN while the rest is still being generated.
+    const aiMsgId = `ai-${Date.now()}`;
+    let streamingStarted = false;
+    let spokenUpTo = 0; // chars of the reply already given to the voice
+    let spokenAny = false;
+    const MIN_SPEAK_CHUNK = 24; // never speak tiny fragments like "Hi."
+
+    // Index just past the LAST sentence terminator followed by space/end (-1
+    // when no sentence has finished yet).
+    const lastSentenceCut = (s) => {
+      const re = /[.?!।]/g;
+      let cut = -1;
+      let m;
+      while ((m = re.exec(s)) !== null) {
+        const next = s[m.index + 1];
+        if (next === undefined || /\s/.test(next)) cut = m.index + 1;
+      }
+      return cut;
+    };
+
+    const speakCompletedSentences = (fullText) => {
+      // Drain every sentence that has completed (one chunk can contain many).
+      for (;;) {
+        const rest = fullText.slice(spokenUpTo);
+        const cut = lastSentenceCut(rest);
+        if (cut === -1) return;
+        const piece = rest.slice(0, cut).trim();
+        // Hold short fragments back so the next sentence joins them.
+        if (piece.length < MIN_SPEAK_CHUNK) return;
+        spokenUpTo += cut;
+        // The first sentence replaces previous speech; later ones queue behind.
+        speakBotReply(piece, { append: spokenAny });
+        spokenAny = true;
+      }
+    };
+
+    const showStreamed = (txt) => {
+      try {
+        speakCompletedSentences(txt);
+      } catch {
+        /* speech must never break the reply */
+      }
+      if (!streamingStarted) {
+        streamingStarted = true;
+        setIsTyping(false);
+        setMessages((prev) => [...prev, { id: aiMsgId, sender: 'bot', text: txt }]);
+        return;
+      }
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === aiMsgId ? { ...msg, text: txt } : msg))
+      );
+    };
+
     try {
-      const reply = await callGroqAPI(userText, updatedMessages);
-      setMessages(prev => [...prev, { sender: 'bot', text: reply || getFallbackResponse(userText.toLowerCase()) }]);
+      let fullText = '';
+      try {
+        fullText = await callGeminiAPI(userText, updatedMessages, { onChunk: showStreamed });
+      } catch (apiErr) {
+        console.error('Sayraa Gemini API error:', apiErr);
+      }
+
+      if (fullText) {
+        if (streamingStarted) {
+          // Bubble already exists — finalise it with the complete trimmed text
+          setMessages((prev) =>
+            prev.map((msg) => (msg.id === aiMsgId ? { ...msg, text: fullText } : msg))
+          );
+        } else {
+          setMessages((prev) => [...prev, { sender: 'bot', text: fullText }]);
+        }
+        // Speak whatever progressive speech did not already speak
+        const leftover = fullText.slice(spokenUpTo).trim();
+        if (leftover) {
+          speakBotReply(leftover, { append: spokenAny });
+        } else if (!spokenAny) {
+          speakBotReply(fullText);
+        }
+      } else {
+        // Gemini totally failed → graceful rule-based fallback
+        const fallback = getFallbackResponse(userText.toLowerCase());
+        setMessages((prev) => [...prev, { sender: 'bot', text: fallback }]);
+        speakBotReply(fallback);
+      }
       if (soundEnabled) soundManager.playHoverSound();
-    } catch (err) {
-      console.error('Sayraa Groq API error:', err);
-      // Graceful fallback to rule-based
-      const fallback = getFallbackResponse(userText.toLowerCase());
-      setMessages(prev => [...prev, { sender: 'bot', text: fallback }]);
     } finally {
       setIsTyping(false);
     }
+  };
+
+  // ── Typed input submit ─────────────────────────────────────────────
+  const handleSend = (e) => {
+    e.preventDefault();
+    sendUserMessage(input);
+  };
+
+  // ── 🎙️ Voice input (Hinglish speech → text → answer) ───────────────
+  const resetListeningUI = () => {
+    isListeningRef.current = false;
+    setIsListening(false);
+    setInterimText('');
+  };
+
+  const startListening = () => {
+    // Pressing the mic AGAIN while listening stops early & sends what was heard
+    if (isListeningRef.current) {
+      if (recognizerRef.current) recognizerRef.current.stop();
+      return;
+    }
+    if (!isVoiceInputSupported()) {
+      setMessages(prev => [...prev, {
+        sender: 'bot',
+        text: "Is browser mein voice input supported nahi hai! Chrome ya Edge browser use karo. 🎙️",
+      }]);
+      return;
+    }
+    // Sayraa's own voice must never feed the mic — stop TTS first
+    stopSayraaSpeaking();
+    recognizerRef.current = createHinglishRecognizer({
+      onInterim: (t) => setInterimText(t),
+      onFinal: (text) => {
+        recognizerRef.current = null;
+        resetListeningUI();
+        if (text) sendUserMessage(text);
+      },
+      onError: (msg) => {
+        recognizerRef.current = null;
+        resetListeningUI();
+        if (msg) {
+          setMessages(prev => [...prev, { sender: 'bot', text: msg }]);
+        }
+      },
+    });
+    if (!recognizerRef.current) {
+      setMessages(prev => [...prev, {
+        sender: 'bot',
+        text: "Is browser mein voice input supported nahi hai! Chrome ya Edge browser use karo. 🎙️",
+      }]);
+      return;
+    }
+    isListeningRef.current = true;
+    setIsListening(true);
+    setInterimText('');
+    playListenChime();
+  };
+
+  // ── 🔊 Mute / unmute Sayraa's voice (persisted) ────────────────────
+  const toggleVoice = () => {
+    setVoiceOn(prev => {
+      const next = !prev;
+      voiceOnRef.current = next;
+      try { localStorage.setItem('sayraaVoiceOn', next ? 'on' : 'off'); } catch { /* storage unavailable */ }
+      if (!next) stopSayraaSpeaking();
+      return next;
+    });
   };
 
   // ── Render ─────────────────────────────────────────────────────────
@@ -300,7 +599,7 @@ const AiChatbot = () => {
           maxWidth: '390px',
           height: '540px',
           backgroundColor: '#0b0f19',
-          backgroundImage: 'linear-gradient(rgba(7, 11, 20, 0.82), rgba(7, 11, 20, 0.88)), url("/chat_bg.png")',
+          backgroundImage: 'linear-gradient(rgba(7, 11, 20, 0.82), rgba(7, 11, 20, 0.88)), url("/chat_bg.webp")',
           backgroundSize: 'cover',
           backgroundPosition: 'center top',
           backgroundRepeat: 'no-repeat',
@@ -311,7 +610,7 @@ const AiChatbot = () => {
           overflow: 'hidden',
           zIndex: 999999,
           boxShadow: '0 15px 40px rgba(0, 240, 255, 0.25), 0 0 0 1px rgba(0,240,255,0.1)',
-          fontFamily: "'Outfit', sans-serif",
+          fontFamily: "'Inter', -apple-system, sans-serif",
         }}
       >
         {/* Header */}
@@ -326,7 +625,16 @@ const AiChatbot = () => {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-            <div
+            <motion.div
+              animate={
+                isSpeaking
+                  ? {
+                      boxShadow: ['0 0 10px rgba(0,240,255,0.4)', '0 0 22px rgba(0,240,255,0.9)', '0 0 10px rgba(0,240,255,0.4)'],
+                      scale: [1, 1.07, 1],
+                    }
+                  : { boxShadow: '0 0 12px rgba(0, 240, 255, 0.35)', scale: 1 }
+              }
+              transition={isSpeaking ? { repeat: Infinity, duration: 1.1 } : { duration: 0.3 }}
               style={{
                 width: '42px',
                 height: '42px',
@@ -342,7 +650,7 @@ const AiChatbot = () => {
               }}
             >
               <img
-                src="/chatbot_avatar.png"
+                src="/chatbot_avatar.webp"
                 alt="Sayraa AI Avatar"
                 style={{
                   width: '100%',
@@ -351,15 +659,46 @@ const AiChatbot = () => {
                   objectPosition: 'top center',
                 }}
               />
-            </div>
+            </motion.div>
             <div>
               <h4 style={{ color: '#ffffff', fontSize: '0.98rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.35rem', margin: 0 }}>
                 Sayraa <Sparkles size={13} color="#00f0ff" />
+                {/* 🎬 Live voice bars — the "video avatar" talking effect */}
+                {isSpeaking && (
+                  <span style={{ display: 'inline-flex', alignItems: 'flex-end', gap: '2px', height: '12px', marginLeft: '2px' }}>
+                    {[0, 1, 2].map((bar) => (
+                      <motion.span
+                        key={bar}
+                        animate={{ height: ['4px', '12px', '4px'] }}
+                        transition={{ repeat: Infinity, duration: 0.7, delay: bar * 0.15 }}
+                        style={{ width: '3px', borderRadius: '2px', background: '#00f0ff', display: 'inline-block' }}
+                      />
+                    ))}
+                  </span>
+                )}
               </h4>
-              <span style={{ color: '#10b981', fontSize: '0.72rem' }}>● Online — Subham's AI Assistant</span>
+              <span style={{ color: isSpeaking ? '#00f0ff' : '#10b981', fontSize: '0.72rem' }}>
+                {isSpeaking ? '🔊 Bol rahi hoon...' : "● Online — Subham's AI Assistant"}
+              </span>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <button
+              onClick={toggleVoice}
+              title={voiceOn ? "Sayraa ki voice band karo (mute)" : "Sayraa ki voice chalu karo"}
+              aria-label={voiceOn ? "Mute Sayraa's voice" : "Unmute Sayraa's voice"}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: voiceOn ? '#00f0ff' : '#9ca3af',
+                cursor: 'pointer',
+                padding: '4px',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              {voiceOn ? <Volume2 size={18} /> : <VolumeX size={18} />}
+            </button>
             <button
               onClick={() => setIsChatbotOpen(false)}
               title="Minimize Chat"
@@ -413,7 +752,7 @@ const AiChatbot = () => {
                   }}
                 >
                   <img
-                    src="/chatbot_avatar.png"
+                    src="/chatbot_avatar.webp"
                     alt="Sayraa AI"
                     style={{
                       width: '100%',
@@ -461,7 +800,7 @@ const AiChatbot = () => {
                 }}
               >
                 <img
-                  src="/chatbot_avatar.png"
+                  src="/chatbot_avatar.webp"
                   alt="Sayraa AI"
                   style={{
                     width: '100%',
@@ -473,6 +812,26 @@ const AiChatbot = () => {
               </div>
               <span>Sayraa soch rahi hai</span>
               <span style={{ letterSpacing: '2px' }}>...</span>
+            </motion.div>
+          )}
+
+          {/* 🎙️ Live voice-input indicator — interim transcript while listening */}
+          {isListening && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 0.6rem', color: '#00f0ff', fontSize: '0.82rem' }}
+            >
+              <motion.span
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{ repeat: Infinity, duration: 1.1 }}
+                style={{ fontSize: '1.1rem' }}
+              >
+                🎙️
+              </motion.span>
+              <span style={{ fontStyle: 'italic', opacity: 0.95 }}>
+                {interimText || 'sun rahi hoon, bolte jao...'}
+              </span>
             </motion.div>
           )}
           <div ref={chatEndRef} />
@@ -495,7 +854,7 @@ const AiChatbot = () => {
                   fontSize: '0.72rem',
                   padding: '0.3rem 0.7rem',
                   cursor: 'pointer',
-                  fontFamily: "'Outfit', sans-serif",
+                  fontFamily: "'Inter', -apple-system, sans-serif",
                 }}
               >
                 {q}
@@ -519,6 +878,7 @@ const AiChatbot = () => {
           <input
             type="text"
             placeholder="Sayraa se kuch bhi poocho..."
+            aria-label="Message Sayraa AI assistant"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={isTyping}
@@ -531,30 +891,65 @@ const AiChatbot = () => {
               color: '#ffffff',
               fontSize: '0.85rem',
               outline: 'none',
-              fontFamily: "'Outfit', sans-serif",
+              fontFamily: "'Inter', -apple-system, sans-serif",
               opacity: isTyping ? 0.6 : 1,
             }}
           />
-          <button
-            type="submit"
-            disabled={isTyping || !input.trim()}
-            style={{
-              background: isTyping ? 'rgba(0,240,255,0.3)' : '#00f0ff',
-              border: 'none',
-              borderRadius: '50%',
-              width: '38px',
-              height: '38px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#030712',
-              cursor: isTyping ? 'not-allowed' : 'pointer',
-              transition: 'background 0.2s',
-              flexShrink: 0,
-            }}
-          >
-            <Send size={15} />
-          </button>
+          {input.trim() ? (
+            <button
+              type="submit"
+              disabled={isTyping}
+              style={{
+                background: isTyping ? 'rgba(0,240,255,0.3)' : '#00f0ff',
+                border: 'none',
+                borderRadius: '50%',
+                width: '38px',
+                height: '38px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#030712',
+                cursor: isTyping ? 'not-allowed' : 'pointer',
+                transition: 'background 0.2s',
+                flexShrink: 0,
+              }}
+            >
+              <Send size={15} />
+            </button>
+          ) : (
+            <motion.button
+              type="button"
+              onClick={startListening}
+              whileTap={{ scale: 0.9 }}
+              title={
+                isListening
+                  ? 'Bolna band karo aur turant send karo — dobara dabao 🎙️'
+                  : 'Bolkar poocho — Hinglish voice input 🎤'
+              }
+              aria-label="Voice input"
+              animate={
+                isListening
+                  ? { boxShadow: ['0 0 0 0 rgba(0,240,255,0.55)', '0 0 0 10px rgba(0,240,255,0)'] }
+                  : { boxShadow: 'none' }
+              }
+              transition={isListening ? { repeat: Infinity, duration: 1.2 } : {}}
+              style={{
+                background: isListening ? '#00f0ff' : 'rgba(0,240,255,0.12)',
+                border: '1.5px solid #00f0ff',
+                borderRadius: '50%',
+                width: '38px',
+                height: '38px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: isListening ? '#030712' : '#00f0ff',
+                cursor: 'pointer',
+                flexShrink: 0,
+              }}
+            >
+              <Mic size={16} />
+            </motion.button>
+          )}
         </form>
       </motion.div>
     </AnimatePresence>

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Terminal, MessageSquare, Download, Sun, Moon, Volume2, VolumeX, Sparkles, FolderGit2, X } from 'lucide-react';
+import { Search, Terminal, MessageSquare, Download, FolderGit2, X } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
 
@@ -8,10 +8,7 @@ const CommandPalette = () => {
   const {
     isCommandPaletteOpen,
     setIsCommandPaletteOpen,
-    theme,
-    toggleTheme,
     soundEnabled,
-    setSoundEnabled,
     setIsTerminalOpen,
     setIsChatbotOpen
   } = usePortfolio();
@@ -141,6 +138,7 @@ const CommandPalette = () => {
               type="text"
               autoFocus
               placeholder="Type a command or search section (Ctrl+K)..."
+              aria-label="Search commands and sections"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               style={{
@@ -150,10 +148,12 @@ const CommandPalette = () => {
                 outline: 'none',
                 color: '#f9fafb',
                 fontSize: '1rem',
-                fontFamily: "'Outfit', sans-serif",
+                fontFamily: "'Inter', -apple-system, sans-serif",
               }}
             />
             <button
+              type="button"
+              aria-label="Close command palette"
               onClick={() => setIsCommandPaletteOpen(false)}
               style={{
                 background: 'none',
@@ -215,7 +215,7 @@ const CommandPalette = () => {
               backgroundColor: '#030712',
               borderTop: '1px solid rgba(255, 255, 255, 0.05)',
               display: 'flex',
-              justify: 'space-between',
+              justifyContent: 'space-between',
               alignItems: 'center',
               fontSize: '0.8rem',
               color: '#6b7280',

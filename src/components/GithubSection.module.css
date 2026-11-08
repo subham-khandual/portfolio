@@ -11,12 +11,53 @@
 }
 
 .statBannerCard {
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: var(--radius-lg);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.statBannerHeader {
+  display: flex;
   align-items: center;
-  overflow: hidden;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent-blue);
+  letter-spacing: 0.02em;
+}
+
+.statBannerGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.75rem 0.5rem;
+  border-radius: var(--radius-md);
+  background: rgba(0, 240, 255, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+}
+
+.statItem strong {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.statItem span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: center;
 }
 
 .bannerImg {

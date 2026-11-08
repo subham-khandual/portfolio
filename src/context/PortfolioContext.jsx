@@ -1,7 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { readStoredVisitorCount } from '../utils/visitorCount';
+
+/* eslint-disable react-refresh/only-export-components -- provider + hook are
+   intentionally co-located; standard React context pattern. */
 
 const PortfolioContext = createContext();
 
+// Visitor-count storage lives in its own module so this file only exports
+// components (Vite fast-refresh requirement).
 export const PortfolioProvider = ({ children }) => {
   const [theme, setTheme] = useState('dark');
   const [soundEnabled, setSoundEnabled] = useState(false);
@@ -11,16 +17,16 @@ export const PortfolioProvider = ({ children }) => {
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [cursorMode, setCursorMode] = useState('default'); // default, hover, drag
-  const [visitorCount, setVisitorCount] = useState(1348);
+  // Lazy initializer: count is derived during render, not via setState in an
+  // effect, so there is no cascading re-render on mount.
+  const [visitorCount] = useState(readStoredVisitorCount);
 
   useEffect(() => {
-    // Visitor counter persistence simulation
-    const storedVisits = localStorage.getItem('visitorCount');
-    if (storedVisits) {
-      setVisitorCount(parseInt(storedVisits, 10) + 1);
-      localStorage.setItem('visitorCount', parseInt(storedVisits, 10) + 1);
-    } else {
-      localStorage.setItem('visitorCount', 1349);
+    // Persist the already-computed count once; keyboard shortcuts below.
+    try {
+      localStorage.setItem('visitorCount', String(visitorCount));
+    } catch {
+      // Private-mode storage can throw — the counter is decorative.
     }
 
     // Keyboard shortcut for Command Palette (Ctrl+K or Cmd+K)
@@ -38,6 +44,8 @@ export const PortfolioProvider = ({ children }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+    // visitorCount is intentionally read once on mount; no re-subscription.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleTheme = () => {

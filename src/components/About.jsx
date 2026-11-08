@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Box, Float, Text } from '@react-three/drei';
+import { Box, Float, Text, OrbitControls } from '@react-three/drei';
 import { User, Code, BookOpen, GraduationCap, Award, Rocket, CheckCircle } from 'lucide-react';
 import { usePortfolio } from '../context/PortfolioContext';
 import { soundManager } from '../utils/audio';
@@ -91,10 +91,12 @@ const About = () => {
             className={styles.cubeSide}
           >
             <div className={styles.cubeCanvasWrapper}>
-              <Canvas camera={{ position: [0, 0, 4.5] }} dpr={[1, 1.25]} gl={{ powerPreference: 'high-performance', antialias: false }}>
-                <ambientLight intensity={0.8} />
+              <Canvas camera={{ position: [0, 0, 4.5] }} dpr={[1, 1.25]} gl={{ powerPreference: 'high-performance', antialias: true }}>
+                <ambientLight intensity={0.9} />
                 <pointLight position={[10, 10, 10]} intensity={1.5} color="#00f0ff" />
+                <pointLight position={[-10, -10, -10]} intensity={1} color="#8b5cf6" />
                 <TechCube />
+                <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={1.5} />
               </Canvas>
               <div className={styles.cubeLabel}>Drag / Rotate 3D Tech Core</div>
             </div>

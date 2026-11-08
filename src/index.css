@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap');
+/* Fonts are declared once in index.html to avoid a render-blocking @import chain */
 
 :root {
   /* Color Palette - Futuristic Dark AI Theme */
@@ -23,7 +23,9 @@
   --gradient-cyan-purple: linear-gradient(135deg, #06b6d4, #8b5cf6);
   --gradient-glow: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(139, 92, 246, 0.2));
 
-  --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-main: var(--font-body);
   --font-code: 'Fira Code', monospace;
 
   --radius-sm: 0.5rem;
@@ -91,6 +93,7 @@ body {
 
 /* Typography Utilities */
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
   line-height: 1.2;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -249,6 +252,16 @@ section {
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+/* Boot overlay ring — compositor-only spin (no JS rAF loop) */
+@keyframes loaderSpin {
+  to { transform: rotate(360deg); }
+}
+
+.loader-ring {
+  animation: loaderSpin 1.4s linear infinite;
+  will-change: transform;
 }
 
 /* Media Query */
