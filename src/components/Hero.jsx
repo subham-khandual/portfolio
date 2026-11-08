@@ -195,6 +195,16 @@ const Hero = () => {
     };
   }, [rawX, rawY]);
 
+  // Smooth scroll to section helper
+  const scrollToSection = (e, sectionId) => {
+    e.preventDefault();
+    if (soundEnabled) soundManager.playClickSound();
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section id="home" ref={heroRef} className={styles.heroSection}>
       {/* Background Ambience & Lighting */}
@@ -248,27 +258,21 @@ const Hero = () => {
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
               }}
-              onClick={() => {
-                if (soundEnabled) soundManager.playClickSound();
-              }}
+              onClick={(e) => scrollToSection(e, 'projects')}
             >
               <span>View My Projects</span>
               <ArrowRight size={17} />
             </a>
 
             <a
-              href="https://www.linkedin.com/in/subham-khandual/"
-              target="_blank"
-              rel="noreferrer me"
+              href="#contact"
               className={styles.connectBtn}
               onMouseMove={handleMagneticMove}
               onMouseLeave={handleMagneticLeave}
               onMouseEnter={() => {
                 if (soundEnabled) soundManager.playHoverSound();
               }}
-              onClick={() => {
-                if (soundEnabled) soundManager.playClickSound();
-              }}
+              onClick={(e) => scrollToSection(e, 'contact')}
             >
               <span>Let's Connect</span>
               <FaLinkedin size={18} className={styles.linkedinIcon} />
