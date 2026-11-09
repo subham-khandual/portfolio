@@ -137,6 +137,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.45rem;
+  min-height: 2.4rem;
 }
 
 .roleGradient {

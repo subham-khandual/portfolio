@@ -17,7 +17,7 @@ const LoadingScreen = () => {
 
   useEffect(() => {
     const timers = [34, 68, 100].map((value, i) =>
-      setTimeout(() => setProgress(value), 90 * (i + 1))
+      setTimeout(() => setProgress(value), 45 * (i + 1))
     );
 
     const dismiss = () => {
@@ -25,17 +25,17 @@ const LoadingScreen = () => {
       dismissed.current = true;
       setProgress(100);
       setFading(true);
-      timers.push(setTimeout(() => setHidden(true), 420));
+      timers.push(setTimeout(() => setHidden(true), 240));
     };
 
     if (document.readyState === 'complete') {
-      timers.push(setTimeout(dismiss, 220));
+      timers.push(setTimeout(dismiss, 60));
     } else {
-      window.addEventListener('load', () => setTimeout(dismiss, 220), { once: true });
+      window.addEventListener('load', () => setTimeout(dismiss, 60), { once: true });
     }
 
-    // Safety valve: never keep the overlay on screen longer than ~1.4s.
-    const safety = setTimeout(dismiss, 1400);
+    // Safety valve: never keep the overlay on screen longer than ~380ms.
+    const safety = setTimeout(dismiss, 380);
 
     return () => {
       timers.forEach(clearTimeout);
@@ -59,7 +59,8 @@ const LoadingScreen = () => {
         justifyContent: 'center',
         fontFamily: "'Inter', -apple-system, sans-serif",
         opacity: fading ? 0 : 1,
-        transition: 'opacity 0.4s ease',
+        transition: 'opacity 0.24s ease',
+        pointerEvents: fading ? 'none' : 'auto',
         willChange: 'opacity',
       }}
     >
