@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', 'public/_opt', 'lh-trace.json', 'eslint-out.txt']),
+  globalIgnores(['dist', 'eslint-out.txt']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -33,7 +33,7 @@ export default defineConfig([
   },
   // Node.js scripts / servers use `require`, `module`, `process`, `__dirname`.
   {
-    files: ['api/**/*.js', 'backend/**/*.js', 'run-lh.cjs'],
+    files: ['api/**/*.js', 'backend/**/*.js'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.node,
@@ -44,7 +44,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['vite.config.js', 'optimize-images.tmp.mjs'],
+    files: ['vite.config.js'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.node,
