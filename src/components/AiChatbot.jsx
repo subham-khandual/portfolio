@@ -12,7 +12,7 @@ import {
   onSayraaSpeakingChange,
 } from '../utils/sayraaVoice';
 
-// ── Gemini API Config ────────────────────────────────────────────────
+// ── Gemini API Config (Primary) ──────────────────────────────────────
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || '';
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 // Fastest-first fallback chain — if one model fails (rate limit / empty reply),
@@ -23,6 +23,16 @@ const GEMINI_MODELS = [
   'gemini-3.1-flash-lite',
   'gemini-3.5-flash',
   'gemini-2.5-flash',
+  'gemini-1.5-flash',
+];
+
+// ── Groq API Config (Secondary Fallback) ─────────────────────────────
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const GROQ_MODELS = [
+  'llama-3.3-70b-versatile',
+  'llama-3.1-8b-instant',
+  'mixtral-8x7b-32768',
 ];
 
 // ── Sayraa System Prompt ─────────────────────────────────────────────
@@ -434,6 +444,114 @@ const AiChatbot = () => {
     throw new Error(`All Gemini models failed — ${lastError}`);
   };
 
+  // ── Groq API Call (Secondary Fallback with streaming) ──────────────
+  const callGroqAPI = async (userMessage, historyMessages, { onChunk } = {}) => {
+    if (!GROQ_API_KEY) throw new Error('VITE_GROQ_API_KEY missing from .env');
+
+    const messagesPayload = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      ...historyMessages
+        .filter((m, i) => !(m.sender === 'bot' && i === 0))
+        .slice(-8)
+        .map((m) => ({
+          role: m.sender === 'user' ? 'user' : 'assistant',
+          content: m.text,
+        })),
+      {
+        role: 'user',
+        content: `${userMessage}\n\n(IMPORTANT: Apna pura jawab SIRF HINGLISH mein do — maximum 5 lines. Devanagari ya pure English bilkul nahi.)`,
+      },
+    ];
+
+    let lastError = '';
+
+    for (const model of GROQ_MODELS) {
+      try {
+        const res = await fetch(GROQ_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${GROQ_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: messagesPayload,
+            temperature: 0.6,
+            max_tokens: 350,
+            stream: true,
+          }),
+        });
+
+        if (!res.ok) {
+          lastError = `${model} → HTTP ${res.status}`;
+          continue;
+        }
+
+        if (res.body && typeof res.body.getReader === 'function') {
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+          let text = '';
+
+          for (;;) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+
+            let nl;
+            while ((nl = buffer.indexOf('\n')) !== -1) {
+              const line = buffer.slice(0, nl).trim();
+              buffer = buffer.slice(nl + 1);
+              if (!line.startsWith('data:')) continue;
+              const payload = line.slice(5).trim();
+              if (!payload || payload === '[DONE]') continue;
+              try {
+                const json = JSON.parse(payload);
+                const delta = json.choices?.[0]?.delta?.content || '';
+                if (delta) {
+                  text += delta;
+                  if (onChunk) onChunk(text);
+                }
+              } catch {
+                // Ignore partial JSON chunks
+              }
+            }
+          }
+          if (text.trim()) return text.trim();
+          lastError = `${model} → empty stream`;
+          continue;
+        }
+
+        // Non-streaming fallback for Groq
+        const res2 = await fetch(GROQ_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${GROQ_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: messagesPayload,
+            temperature: 0.6,
+            max_tokens: 350,
+            stream: false,
+          }),
+        });
+        if (!res2.ok) {
+          lastError = `${model} → HTTP ${res2.status}`;
+          continue;
+        }
+        const data = await res2.json();
+        const text = data.choices?.[0]?.message?.content?.trim();
+        if (text) return text;
+        lastError = `${model} → empty reply`;
+      } catch (err) {
+        lastError = `${model} → ${err?.message || String(err)}`;
+      }
+    }
+    throw new Error(`All Groq models failed — ${lastError}`);
+  };
+
   // ── Core send (used by BOTH typed input and 🎙️ voice input) ────────
   const sendUserMessage = async (rawText) => {
     const userText = (rawText || '').trim();
@@ -504,10 +622,21 @@ const AiChatbot = () => {
 
     try {
       let fullText = '';
+
+      // 1. Primary: Try Gemini API
       try {
         fullText = await callGeminiAPI(userText, updatedMessages, { onChunk: showStreamed });
       } catch (apiErr) {
-        console.error('Sayraa Gemini API error:', apiErr);
+        console.warn('Sayraa Gemini (Primary) failed, switching to Groq fallback:', apiErr?.message || apiErr);
+      }
+
+      // 2. Secondary: If Gemini failed, try Groq Cloud API
+      if (!fullText) {
+        try {
+          fullText = await callGroqAPI(userText, updatedMessages, { onChunk: showStreamed });
+        } catch (groqErr) {
+          console.warn('Sayraa Groq (Secondary) failed, switching to local fallback:', groqErr?.message || groqErr);
+        }
       }
 
       if (fullText) {
