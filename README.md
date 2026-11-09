@@ -284,7 +284,7 @@ This project is open source and available under the MIT License. Feel free to us
 ## 📞 Contact & Connect
 
 - 📧 **Email:** [your-email@example.com](mailto:your-email@example.com)
-- 💼 **LinkedIn:** [SubhamKhandual007](https://linkedin.com/in/SubhamKhandual007)
+- 💼 **LinkedIn:** [SubhamKhandual007](https://linkedin.com/in/subham-khandual)
 - 🐙 **GitHub:** [@subham-khandual](https://github.com/subham-khandual)
 - 🐦 **Twitter:** [@SubhamKhandual](https://twitter.com/SubhamKhandual)
 
