@@ -71,22 +71,8 @@ const Contact = () => {
 
       let delivered = false;
 
-      // 1. Backend API (MongoDB) if server is configured and reachable
-      if (apiUrl) {
-        try {
-          const apiRes = await fetch(`${apiUrl}/api/contact`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData),
-          });
-          if (apiRes.ok) delivered = true;
-        } catch {
-          // Backend offline or unreachable
-        }
-      }
-
-      // 2. Web3Forms Dispatcher if configured in .env
-      if (web3Key && !delivered) {
+      // 1. Web3Forms Dispatcher (Direct Gmail Notification)
+      if (web3Key) {
         try {
           const res = await fetch('https://api.web3forms.com/submit', {
             method: 'POST',
@@ -96,18 +82,18 @@ const Contact = () => {
               name: formData.name,
               email: formData.email,
               message: formData.message,
-              subject: `Portfolio Contact from ${formData.name}`,
+              subject: `New Portfolio Message from ${formData.name}`,
               from_name: 'Subham Portfolio Website',
             }),
           });
           const data = await res.json();
           if (data.success) delivered = true;
-        } catch {
-          // Web3Forms unreachable
+        } catch (err) {
+          console.warn('Web3Forms dispatch failed:', err);
         }
       }
 
-      // 3. EmailJS Dispatcher if configured in .env with valid non-dummy keys
+      // 2. EmailJS Dispatcher if configured in .env with valid non-dummy keys
       if (
         !delivered &&
         emailjsService &&
@@ -128,8 +114,21 @@ const Contact = () => {
             emailjsKey
           );
           if (res.status === 200) delivered = true;
+        } catch (err) {
+          console.warn('EmailJS failed:', err);
+        }
+      }
+
+      // 3. Backend API (MongoDB) Archive in parallel if server is configured and reachable
+      if (apiUrl) {
+        try {
+          await fetch(`${apiUrl}/api/contact`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+          });
         } catch {
-          // EmailJS rejected or failed
+          // Backend offline or unreachable
         }
       }
 
