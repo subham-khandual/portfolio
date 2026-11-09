@@ -1,6 +1,6 @@
 import React, { useState, useRef, Suspense, lazy } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Mail, MapPin, Send, MessageCircle, CheckCircle2 } from 'lucide-react';
+import { Mail, MapPin, Send, MessageCircle, CheckCircle2, ExternalLink } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import confetti from 'canvas-confetti';
 import { usePortfolio } from '../context/PortfolioContext';
@@ -25,6 +25,7 @@ const Contact = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [fallbackMode, setFallbackMode] = useState(false);
 
   const validate = (data = formData) => {
     let newErrors = {};
@@ -51,6 +52,7 @@ const Contact = () => {
 
     const currentErrors = validate(updated);
     setErrors(currentErrors);
+    if (fallbackMode) setFallbackMode(false);
   };
 
   const handleSubmit = async (e) => {
@@ -59,35 +61,90 @@ const Contact = () => {
 
     if (Object.keys(currentErrors).length === 0) {
       setIsSubmitting(true);
-      try {
-        // Attempt EmailJS send if service ID configured, otherwise fallback to local API/simulation
-        await emailjs.send(
-          'YOUR_SERVICE_ID',
-          'YOUR_TEMPLATE_ID',
-          {
-            from_name: formData.name,
-            from_email: formData.email,
-            message: formData.message,
-            to_name: 'Subham Khandual',
-          },
-          'YOUR_PUBLIC_KEY'
-        ).catch(() => {
-          // Fallback simulation for contact
-          return { status: 200 };
-        });
+      setFallbackMode(false);
 
-        setIsSubmitting(false);
+      const web3Key = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
+      const emailjsService = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const emailjsTemplate = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+      const emailjsKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+      const apiUrl = import.meta.env.VITE_API_URL;
+
+      let delivered = false;
+
+      // 1. Backend API (MongoDB) if server is configured and reachable
+      if (apiUrl) {
+        try {
+          const apiRes = await fetch(`${apiUrl}/api/contact`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData),
+          });
+          if (apiRes.ok) delivered = true;
+        } catch {
+          // Backend offline or unreachable
+        }
+      }
+
+      // 2. Web3Forms Dispatcher if configured in .env
+      if (web3Key && !delivered) {
+        try {
+          const res = await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({
+              access_key: web3Key,
+              name: formData.name,
+              email: formData.email,
+              message: formData.message,
+              subject: `Portfolio Contact from ${formData.name}`,
+              from_name: 'Subham Portfolio Website',
+            }),
+          });
+          const data = await res.json();
+          if (data.success) delivered = true;
+        } catch {
+          // Web3Forms unreachable
+        }
+      }
+
+      // 3. EmailJS Dispatcher if configured in .env with valid non-dummy keys
+      if (
+        !delivered &&
+        emailjsService &&
+        emailjsTemplate &&
+        emailjsKey &&
+        emailjsService !== 'YOUR_SERVICE_ID'
+      ) {
+        try {
+          const res = await emailjs.send(
+            emailjsService,
+            emailjsTemplate,
+            {
+              from_name: formData.name,
+              from_email: formData.email,
+              message: formData.message,
+              to_name: 'Subham Khandual',
+            },
+            emailjsKey
+          );
+          if (res.status === 200) delivered = true;
+        } catch {
+          // EmailJS rejected or failed
+        }
+      }
+
+      setIsSubmitting(false);
+
+      if (delivered) {
         setSubmitted(true);
         setFormData({ name: '', email: '', message: '' });
-
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
         if (soundEnabled) soundManager.playSuccessSound();
-
-        setTimeout(() => setSubmitted(false), 6000);
-      } catch (error) {
-        console.error('Submit error:', error);
-        setIsSubmitting(false);
-        setSubmitted(true); // Fallback friendly UX
+        setTimeout(() => setSubmitted(false), 7000);
+      } else {
+        // Multi-tier Fallback: Enable 1-click direct delivery to Gmail or WhatsApp
+        setFallbackMode(true);
+        if (soundEnabled) soundManager.playClickSound();
       }
     } else {
       setErrors(currentErrors);
@@ -259,6 +316,52 @@ const Contact = () => {
               >
                 <CheckCircle2 size={18} color="#10b981" />
                 <span>Thank you! Your message has been transmitted successfully. Subham will reply shortly.</span>
+              </motion.div>
+            )}
+
+            {fallbackMode && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={styles.fallbackBox}
+              >
+                <div className={styles.fallbackHeader}>
+                  <ExternalLink size={16} color="#00f0ff" />
+                  <span>Direct Delivery Ready: Click to send your pre-filled message instantly:</span>
+                </div>
+                <div className={styles.fallbackActions}>
+                  <a
+                    href={`mailto:subhamkhandual215@gmail.com?subject=${encodeURIComponent(
+                      `Portfolio Inquiry from ${formData.name}`
+                    )}&body=${encodeURIComponent(
+                      `Hi Subham,\n\n${formData.message}\n\nFrom: ${formData.name}\nEmail: ${formData.email}`
+                    )}`}
+                    className={styles.fallbackBtnEmail}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => {
+                      if (soundEnabled) soundManager.playClickSound();
+                    }}
+                  >
+                    <Mail size={16} />
+                    <span>Open in Gmail</span>
+                  </a>
+
+                  <a
+                    href={`https://wa.me/917894047169?text=${encodeURIComponent(
+                      `Hi Subham, I am ${formData.name} (${formData.email}).\n\n${formData.message}`
+                    )}`}
+                    className={styles.fallbackBtnWhatsapp}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => {
+                      if (soundEnabled) soundManager.playClickSound();
+                    }}
+                  >
+                    <MessageCircle size={16} />
+                    <span>Send via WhatsApp</span>
+                  </a>
+                </div>
               </motion.div>
             )}
           </motion.form>
