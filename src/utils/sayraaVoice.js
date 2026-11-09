@@ -405,23 +405,37 @@ export const isSpeechSynthesisSupported = () =>
   typeof window !== "undefined" && !!window.speechSynthesis;
 
 // ── Speaking state (drives the animated "video-style" avatar UI) ────
-// True whenever at least one Sayraa utterance is actually playing.
+// True whenever at least one Sayraa utterance is actually playing or queued.
 const activeUtterances = new Set();
 let speakingListener = null;
+
+// ── Ordered FIFO Speech Queue ──────────────────────────────────────
+// Prevents out-of-order speech race conditions in Chrome/Edge,
+// and guarantees progressive streaming sentences play in strict chronological sequence.
+let utteranceQueue = [];
+let isQueueActive = false;
+let cancelWaitTimer = null;
+
 const notifySpeaking = () => {
-  if (speakingListener) speakingListener(activeUtterances.size > 0);
+  if (speakingListener) speakingListener(activeUtterances.size > 0 || isQueueActive);
 };
 
 // Subscribe to Sayraa's speaking state. Returns an unsubscribe function.
 export const onSayraaSpeakingChange = (cb) => {
   speakingListener = cb;
-  cb(activeUtterances.size > 0);
+  cb(activeUtterances.size > 0 || isQueueActive);
   return () => {
     if (speakingListener === cb) speakingListener = null;
   };
 };
 
 export const stopSayraaSpeaking = () => {
+  if (cancelWaitTimer) {
+    clearTimeout(cancelWaitTimer);
+    cancelWaitTimer = null;
+  }
+  utteranceQueue = [];
+  isQueueActive = false;
   try {
     if (typeof window !== "undefined" && window.speechSynthesis) {
       window.speechSynthesis.cancel();
@@ -434,8 +448,80 @@ export const stopSayraaSpeaking = () => {
   notifySpeaking();
 };
 
+const drainNextInQueue = (synth) => {
+  if (!synth) {
+    isQueueActive = false;
+    notifySpeaking();
+    return;
+  }
+
+  if (utteranceQueue.length === 0) {
+    isQueueActive = false;
+    notifySpeaking();
+    return;
+  }
+
+  isQueueActive = true;
+  const current = utteranceQueue.shift();
+  const { spokenText, lang, sweet } = current;
+
+  // ONE decision point picks both the voice and its prosody, so English and
+  // Hinglish always share the same sweet tone.
+  const choice = chooseSayraaVoice(synth, lang);
+  const hasHindiVoice =
+    !!choice.voice && (choice.lang || "").toLowerCase().startsWith("hi");
+
+  // Devanagari can ONLY be voiced by a Hindi voice. Sent to an English voice
+  // Chrome reads it as literally nothing — so when no Hindi voice exists,
+  // transliterate the Devanagari into Roman Hinglish, which every voice can
+  // pronounce.
+  let speakable = spokenText;
+  if (lang !== "english" && !hasHindiVoice && /[\u0900-\u097F]/.test(speakable)) {
+    speakable = toEnglishLetters(speakable).replace(/\s{2,}/g, " ").trim();
+  }
+
+  const utterance = new SpeechSynthesisUtterance(speakable);
+  applyVoiceChoice(utterance, choice);
+
+  // Greeting delivery — a touch slower and higher for extra cuteness
+  if (sweet) {
+    utterance.rate = 0.95;
+    utterance.pitch = 1.25;
+  }
+
+  utterance.onstart = () => {
+    activeUtterances.add(utterance);
+    notifySpeaking();
+  };
+
+  let finished = false;
+  const stepNext = () => {
+    if (finished) return;
+    finished = true;
+    activeUtterances.delete(utterance);
+    // Proceed to next queued sentence in strict chronological FIFO order
+    drainNextInQueue(synth);
+  };
+
+  utterance.onend = stepNext;
+
+  // If Chrome blocks speech until the user interacts (autoplay policy), retry
+  // once on the very first click / key press / tap.
+  utterance.onerror = (e) => {
+    const err = (e && e.error) || "";
+    if (err === "not-allowed" || err === "not_allowed") {
+      console.warn("Speech blocked before user interaction — retrying on first gesture.");
+      armGestureRetry(() => synth.speak(utterance));
+    }
+    stepNext();
+  };
+
+  synth.speak(utterance);
+};
+
 /**
  * Sayraa SPEAKS a reply aloud with her sweet female voice.
+ * Sentences are queued and spoken in strict chronological FIFO order.
  * @param {string} text  reply text (may contain markdown/emojis — cleaned first)
  * @param {object} opts  { lang: 'hinglish' | 'english', append: bool,
  *                         sweet: bool → extra-sweet delivery for greetings }
@@ -445,71 +531,33 @@ export const speakSayraa = (text, { lang = "hinglish", append = false, sweet = f
   const synth = window.speechSynthesis;
   if (!synth) return;
 
-  // Cancel any ongoing speech to avoid delays — but when the caller asked to
-  // APPEND (progressive speech), leave the current sentence playing.
-  const wasSpeaking = synth.speaking || synth.pending;
-  if (!append) synth.cancel();
-
   const spokenText = cleanTextForSpeech(text);
   if (!spokenText) return;
 
-  const speak = () => {
-    // ONE decision point picks both the voice and its prosody, so English and
-    // Hinglish always share the same sweet tone.
-    const choice = chooseSayraaVoice(synth, lang);
-    const hasHindiVoice =
-      !!choice.voice && (choice.lang || "").toLowerCase().startsWith("hi");
+  if (!append) {
+    const wasSpeaking = synth.speaking || synth.pending || isQueueActive;
+    stopSayraaSpeaking();
+    utteranceQueue.push({ spokenText, lang, sweet });
+    isQueueActive = true;
 
-    // Devanagari can ONLY be voiced by a Hindi voice. Sent to an English voice
-    // Chrome reads it as literally nothing — so when no Hindi voice exists,
-    // transliterate the Devanagari into Roman Hinglish, which every voice can
-    // pronounce.
-    let speakable = spokenText;
-    if (lang !== "english" && !hasHindiVoice && /[\u0900-\u097F]/.test(speakable)) {
-      speakable = toEnglishLetters(speakable).replace(/\s{2,}/g, " ").trim();
-    }
-
-    const utterance = new SpeechSynthesisUtterance(speakable);
-    applyVoiceChoice(utterance, choice);
-
-    // Greeting delivery — a touch slower and higher for extra cuteness
-    if (sweet) {
-      utterance.rate = 0.95;
-      utterance.pitch = 1.25;
-    }
-
-    utterance.onstart = () => {
-      activeUtterances.add(utterance);
-      notifySpeaking();
-    };
-    utterance.onend = () => {
-      if (activeUtterances.delete(utterance)) notifySpeaking();
-    };
-
-    // If Chrome blocks speech until the user interacts (autoplay policy), retry
-    // once on the very first click / key press / tap.
-    utterance.onerror = (e) => {
-      if (activeUtterances.delete(utterance)) notifySpeaking();
-      const err = (e && e.error) || "";
-      if (err === "not-allowed" || err === "not_allowed") {
-        console.warn("Speech blocked before user interaction — retrying on first gesture.");
-        armGestureRetry(() => synth.speak(utterance));
-      }
-    };
-
-    if (append) {
-      // Queue natively right behind the sentence that is currently playing.
-      synth.speak(utterance);
-    } else if (wasSpeaking) {
+    if (wasSpeaking) {
       // Chrome sometimes swallows an utterance that starts in the same tick as
       // cancel(), so give the engine a moment to flush the previous speech.
-      setTimeout(() => synth.speak(utterance), 80);
+      cancelWaitTimer = setTimeout(() => {
+        cancelWaitTimer = null;
+        waitForVoicesReady(() => drainNextInQueue(synth));
+      }, 60);
     } else {
-      synth.speak(utterance);
+      waitForVoicesReady(() => drainNextInQueue(synth));
     }
-  };
-
-  waitForVoicesReady(speak);
+  } else {
+    // Append to strict FIFO queue
+    utteranceQueue.push({ spokenText, lang, sweet });
+    if (!isQueueActive && !cancelWaitTimer) {
+      isQueueActive = true;
+      waitForVoicesReady(() => drainNextInQueue(synth));
+    }
+  }
 };
 
 // ---- Subtle chime when the mic opens ----

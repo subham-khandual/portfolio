@@ -574,30 +574,37 @@ const AiChatbot = () => {
     let spokenAny = false;
     const MIN_SPEAK_CHUNK = 24; // never speak tiny fragments like "Hi."
 
-    // Index just past the LAST sentence terminator followed by space/end (-1
+    // Index just past the FIRST sentence terminator followed by space/end/newline (-1
     // when no sentence has finished yet).
-    const lastSentenceCut = (s) => {
-      const re = /[.?!।]/g;
-      let cut = -1;
+    const firstSentenceCut = (s) => {
+      const re = /[.?!।\n]/g;
       let m;
       while ((m = re.exec(s)) !== null) {
         const next = s[m.index + 1];
-        if (next === undefined || /\s/.test(next)) cut = m.index + 1;
+        if (next === undefined || /\s/.test(next) || m[0] === '\n') {
+          return m.index + 1;
+        }
       }
-      return cut;
+      return -1;
     };
 
     const speakCompletedSentences = (fullText) => {
-      // Drain every sentence that has completed (one chunk can contain many).
+      // Drain every sentence that has completed in strict chronological FIFO order.
       for (;;) {
         const rest = fullText.slice(spokenUpTo);
-        const cut = lastSentenceCut(rest);
+        const cut = firstSentenceCut(rest);
         if (cut === -1) return;
         const piece = rest.slice(0, cut).trim();
-        // Hold short fragments back so the next sentence joins them.
-        if (piece.length < MIN_SPEAK_CHUNK) return;
+        // Skip empty whitespace-only slices
+        if (!piece) {
+          spokenUpTo += cut;
+          continue;
+        }
+        // Hold short fragments back so the next sentence joins them,
+        // unless more text exists in rest
+        if (piece.length < MIN_SPEAK_CHUNK && !rest.slice(cut).trim()) return;
         spokenUpTo += cut;
-        // The first sentence replaces previous speech; later ones queue behind.
+        // The first sentence starts playback; later ones queue strictly behind in FIFO order.
         speakBotReply(piece, { append: spokenAny });
         spokenAny = true;
       }
