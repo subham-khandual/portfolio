@@ -95,7 +95,7 @@ const Navbar = () => {
             if (soundEnabled) soundManager.playHoverSound();
           }}
         >
-          <span className={styles.logoBadge}>SK</span>
+          <img src="/logo.webp" alt="SK Logo" className={styles.logoBadge} />
           <span className={styles.logoText}>Subham Khandual</span>
         </a>
 
