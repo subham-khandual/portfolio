@@ -118,7 +118,17 @@
 .educationDetails {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1.25rem;
+}
+
+.eduItem {
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.eduItem:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .eduHeader {
@@ -128,12 +138,27 @@
   gap: 1rem;
 }
 
+.eduHeader h4 {
+  font-family: var(--font-heading);
+  font-size: 1.025rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.eduInstitution {
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0;
+}
+
 .eduList {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
   margin-top: 0.5rem;
+  padding: 0;
 }
 
 .eduList li {
@@ -141,7 +166,7 @@
   align-items: center;
   gap: 0.5rem;
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 }
 
 @media (max-width: 992px) {

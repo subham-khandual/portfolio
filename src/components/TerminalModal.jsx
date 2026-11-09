@@ -38,7 +38,9 @@ const TerminalModal = () => {
     let resolvedCmd = cmd;
     if (cmd.includes('help') || cmd.includes('command')) {
       resolvedCmd = 'help';
-    } else if (cmd.includes('about') || cmd.includes('who') || cmd.includes('bio') || cmd.includes('studies') || cmd.includes('student') || cmd.includes('education')) {
+    } else if (cmd.includes('education') || cmd.includes('college') || cmd.includes('school') || cmd.includes('study')) {
+      resolvedCmd = 'education';
+    } else if (cmd.includes('about') || cmd.includes('who') || cmd.includes('bio') || cmd.includes('studies') || cmd.includes('student')) {
       resolvedCmd = 'about';
     } else if (cmd.includes('skill') || cmd.includes('stack') || cmd.includes('tech') || cmd.includes('language') || cmd.includes('program')) {
       resolvedCmd = 'skills';
@@ -59,7 +61,14 @@ const TerminalModal = () => {
     switch (resolvedCmd) {
       case 'help':
         newHistory.push({
-          text: `Available commands:\n  help        - Show available commands\n  about       - Subham's background & Bio\n  skills      - Full tech stack breakdown\n  projects    - Highlighted AI & Web projects\n  contact     - Email & Social profiles\n  clear       - Clear terminal output\n  sudo hire   - Recruit Subham! 🎉\n  theme       - Show current active theme\n  exit        - Close terminal`,
+          text: `Available commands:\n  help        - Show available commands\n  about       - Subham's background & Bio\n  education   - Academic qualifications timeline\n  skills      - Full tech stack breakdown\n  projects    - Highlighted AI & Web projects\n  contact     - Email & Social profiles\n  clear       - Clear terminal output\n  sudo hire   - Recruit Subham! 🎉\n  theme       - Show current active theme\n  exit        - Close terminal`,
+          type: 'response',
+        });
+        break;
+
+      case 'education':
+        newHistory.push({
+          text: `🎓 Education Timeline:\n1. B.Tech in Computer Science & Engineering (2023 - 2027)\n   GIFT Autonomous College, Bhubaneswar, Odisha\n\n2. Higher Secondary Education - +2 Science (2021 - 2023)\n   Swadhin Residential Higher Secondary School, Nimapada, Puri\n\n3. Secondary School Education - 10th (2010 - 2021)\n   Saraswati Shishu Vidya Mandir, Astaranga, Puri`,
           type: 'response',
         });
         break;

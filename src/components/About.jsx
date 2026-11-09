@@ -231,17 +231,48 @@ const About = () => {
                 <h3>Education & Academic Foundation</h3>
               </div>
               <div className={styles.educationDetails}>
-                <div className={styles.eduHeader}>
-                  <h4 style={{ color: '#00f0ff' }}>Bachelor of Technology - Computer Science & Engineering</h4>
-                  <span className="badge">2023 – 2027</span>
+                {/* 1. B.Tech (Current) */}
+                <div className={styles.eduItem}>
+                  <div className={styles.eduHeader}>
+                    <h4 style={{ color: '#00f0ff' }}>B.Tech in Computer Science & Engineering</h4>
+                    <span className="badge">2023 – 2027</span>
+                  </div>
+                  <p className={styles.eduInstitution}>
+                    GIFT Autonomous College, Bhubaneswar, Odisha
+                  </p>
+                  <ul className={styles.eduList}>
+                    <li><CheckCircle size={14} color="#00f0ff" /> Coursework: Data Structures & Algorithms, DBMS, Operating Systems, Computer Networks.</li>
+                    <li><CheckCircle size={14} color="#00f0ff" /> Hands-on engineering in Full-Stack Web Development, AI/ML, & Cloud Solutions.</li>
+                  </ul>
                 </div>
-                <p style={{ color: 'var(--text-secondary)', marginTop: '0.35rem' }}>
-                  GIFT Autonomous College, Bhubaneswar, Odisha.
-                </p>
-                <ul className={styles.eduList}>
-                  <li><CheckCircle size={14} color="#00f0ff" /> Coursework: Data Structures & Algorithms, DBMS, Operating Systems, Computer Networks.</li>
-                  <li><CheckCircle size={14} color="#00f0ff" /> Hands-on projects in Machine Learning, Full-Stack Web Development, & PWA.</li>
-                </ul>
+
+                {/* 2. Intermediate */}
+                <div className={styles.eduItem}>
+                  <div className={styles.eduHeader}>
+                    <h4 style={{ color: '#a78bfa' }}>Higher Secondary Education (+2 Science)</h4>
+                    <span className="badge">2021 – 2023</span>
+                  </div>
+                  <p className={styles.eduInstitution}>
+                    Swadhin Residential Higher Secondary School, Nimapada, Puri
+                  </p>
+                  <ul className={styles.eduList}>
+                    <li><CheckCircle size={14} color="#a78bfa" /> Core Subjects: Physics, Chemistry, Mathematics, & Computer Science.</li>
+                  </ul>
+                </div>
+
+                {/* 3. Schooling */}
+                <div className={styles.eduItem}>
+                  <div className={styles.eduHeader}>
+                    <h4 style={{ color: '#38bdf8' }}>Secondary School Education (Matriculation)</h4>
+                    <span className="badge">2010 – 2021</span>
+                  </div>
+                  <p className={styles.eduInstitution}>
+                    Saraswati Shishu Vidya Mandir, Astaranga, Puri
+                  </p>
+                  <ul className={styles.eduList}>
+                    <li><CheckCircle size={14} color="#38bdf8" /> Strong foundation in Mathematics, Sciences, and Academic Excellence.</li>
+                  </ul>
+                </div>
               </div>
             </motion.div>
 

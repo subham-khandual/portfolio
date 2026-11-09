@@ -55,10 +55,20 @@ Subham Khandual is a Full-Stack MERN & AI Developer based in Bhubaneswar, Odisha
 - Instagram: @subham_khandual
 
 🎓 EDUCATION & ACADEMIC FOUNDATION
-- Degree: Bachelor of Technology (B.Tech) in Computer Science & Engineering
-- Institution: Gandhi Institute for Technology (GIFT Autonomous), Bhubaneswar, Odisha
-- Timeline: 2023 – 2027 (Ongoing)
-- Core Subjects: Data Structures & Algorithms (DSA), Database Management Systems (DBMS), Operating Systems (OS), Computer Networks (CN), Software Engineering.
+1. Bachelor of Technology (B.Tech) in Computer Science & Engineering
+   - Institution: Gandhi Institute for Technology (GIFT Autonomous), Bhubaneswar, Odisha
+   - Timeline: 2023 – 2027 (Ongoing)
+   - Core Subjects: Data Structures & Algorithms (DSA), DBMS, Operating Systems, Computer Networks, AI/ML.
+
+2. Higher Secondary Education (+2 Science / Intermediate)
+   - Institution: Swadhin Residential Higher Secondary School (College), Nimapada, Puri
+   - Timeline: 2021 – 2023
+   - Core Subjects: Physics, Chemistry, Mathematics, Computer Science.
+
+3. Secondary School Education (Matriculation / 10th)
+   - Institution: Saraswati Shishu Vidya Mandir, Astaranga, Puri
+   - Timeline: 2010 – 2021
+   - Highlights: Strong foundation in Mathematics, Sciences, and Academic Excellence.
 
 💼 PROFESSIONAL EXPERIENCE & INTERNSHIPS
 1. AI / ML Developer Intern — Central Tool Room & Training Centre (CTTC), Bhubaneswar
@@ -143,8 +153,8 @@ const getFallbackResponse = (q) => {
   if (q.includes('experience') || q.includes('intern') || q.includes('cttc') || q.includes('work') || q.includes('job'))
     return "💼 **Subham's Professional Experience:**\n1. **AI / ML Intern** at CTTC Bhubaneswar (May–July 2025): Developed Python ML pipelines, computer vision models & data preprocessing.\n2. **Core Java Intern** at CTTC Bhubaneswar (July 2024): Built database-driven desktop applications using Java OOP, JDBC, and MySQL.";
 
-  if (q.includes('education') || q.includes('college') || q.includes('btech') || q.includes('gift') || q.includes('degree') || q.includes('study'))
-    return "🎓 **Education:**\n• **B.Tech in Computer Science & Engineering** (2023 – 2027)\n• GIFT Autonomous College, Bhubaneswar, Odisha\n• Core Coursework: DSA, DBMS, Operating Systems, Computer Networks, Machine Learning.";
+  if (q.includes('education') || q.includes('college') || q.includes('school') || q.includes('intermediate') || q.includes('btech') || q.includes('gift') || q.includes('degree') || q.includes('study'))
+    return "🎓 **Subham's Academic Background:**\n1. **B.Tech in CSE (2023 – 2027)** — GIFT Autonomous College, Bhubaneswar (DSA, Full-Stack, AI/ML)\n2. **+2 Science / Intermediate (2021 – 2023)** — Swadhin Residential Higher Secondary School, Nimapada, Puri\n3. **10th Matriculation (2010 – 2021)** — Saraswati Shishu Vidya Mandir, Astaranga, Puri";
 
   if (q.includes('achievement') || q.includes('metric') || q.includes('stats') || q.includes('problem') || q.includes('hackathon'))
     return "🏆 **Key Achievements:**\n• 15+ Completed Web & AI Projects\n• 25+ Open-Source Repositories on GitHub\n• 500+ Solved Algorithmic Problems (DSA)\n• 10+ Hackathons & Coding Contests\n• 5+ Verified Certifications (CTTC & NPTEL)";
