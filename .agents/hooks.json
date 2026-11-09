@@ -1,0 +1,17 @@
+{
+  "code-quality-gate": {
+    "enabled": true,
+    "PostToolUse": [
+      {
+        "matcher": "edit_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm run lint",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}

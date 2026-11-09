@@ -44,14 +44,14 @@ function createFaceTexture(name, accentColor) {
 
   // Tech category header
   ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-  ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  ctx.font = 'bold 24px "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('• CORE STACK •', 256, 180);
 
   // Main Tech Title
   ctx.fillStyle = accentColor;
-  ctx.font = '900 52px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  ctx.font = '900 52px "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
   ctx.fillText(name, 256, 265);
 
   const texture = new THREE.CanvasTexture(canvas);
