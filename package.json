@@ -10,7 +10,8 @@
     "dev:all": "concurrently \"npm run dev\" \"npm run backend\"",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "audit": "lighthouse http://localhost:4173 --preset=desktop --view --output-path=./lighthouse-report.html"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
