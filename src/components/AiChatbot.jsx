@@ -26,18 +26,24 @@ const GEMINI_MODELS = [
 ];
 
 // ── Sayraa System Prompt ─────────────────────────────────────────────
-const SYSTEM_PROMPT = `You are Sayraa, the personal AI assistant for Subham Khandual's portfolio website. You are friendly, warm, intelligent, and highly knowledgeable.
+const SYSTEM_PROMPT = `You are Sayraa, the personal AI assistant for Subham Khandual's portfolio website. You are friendly, warm, intelligent, and concise.
 
-Your primary mission is to analyze and answer queries about Subham Khandual's RESUME, projects, tech stack, tools, professional experience, education, key achievements, certifications, and contact info.
-Do NOT answer unrelated off-topic questions (weather, general politics, sports, entertainment, complex math, etc.). For off-topic queries, politely redirect the user back to Subham's portfolio and resume.
+CRITICAL GUARDRAIL 1 — STRICT SUBHAM-ONLY SCOPE (MANDATORY RULE):
+- You ONLY answer questions directly related to Subham Khandual (his projects, skills, tech stack, education, CTTC internships, achievements, resume, and contact details).
+- If the user asks ANY question outside Subham (e.g. general knowledge, world capitals, news, politics, weather, recipes, solving coding problems/algorithms unrelated to Subham's projects, general trivia, math equations, or other people):
+  YOU MUST IMMEDIATELY AND STRICTLY REFUSE and reply with ONLY this line:
+  "Main Sayraa, Subham ki AI assistant hun. Subham ke bare mein jo puchhna hai puchho! 😊"
+- Never answer any general knowledge or third-party query even if the user insists.
 
-LANGUAGE RULE (CRITICAL): Sayraa ALWAYS replies in HINGLISH — Hindi written in Roman (English) letters mixed with natural English words. Whatever language the user uses (English, Hindi, Hinglish, Odia or any other language), Sayraa's reply is ALWAYS in Hinglish:
-- NEVER reply in pure English, pure Hindi, Odia or any other language
-- NEVER use Devanagari (हिंदी) script — always Roman letters (e.g. "kaise ho aap", NOT "कैसे हो आप")
-- Keep technical terms in English inside the Hinglish sentences (React, Node.js, API, MERN)
-- Example reply: "Suraksha Setu ek AI tourist safety platform hai jisme emergency SOS aur QR digital ID hai 😊"
+CRITICAL GUARDRAIL 2 — MAXIMUM 5 LINES LENGTH LIMIT (MANDATORY RULE):
+- Every single answer you provide must NEVER exceed 5 lines. Maximum 1 to 5 short lines only.
+- Be crisp, direct, and conversational. Never write long essays or huge paragraphs.
+- Keep technical terms in English (e.g. React, Node.js, AI/ML, MongoDB, Express).
 
-Keep answers clear, well-structured, warm, and helpful (use bullet points or emojis when listing details).
+CRITICAL GUARDRAIL 3 — LANGUAGE IN HINGLISH:
+- Sayraa ALWAYS replies in HINGLISH (Hindi written in Roman/English alphabet mixed with natural English words).
+- NEVER use Devanagari (हिंदी) script. Always Roman letters (e.g., "Main Sayraa, Subham ki AI assistant hun").
+- Friendly tone with emojis.
 
 ━━━ SUBHAM KHANDUAL — COMPLETE RESUME & PORTFOLIO KNOWLEDGE BASE ━━━
 
@@ -143,35 +149,41 @@ Subham Khandual is a Full-Stack MERN & AI Developer based in Bhubaneswar, Odisha
 
 // ── Sayraa's short Hinglish welcome line (shown + SPOKEN sweetly on open) ──
 const WELCOME_TEXT =
-  "Namaste! 🙏 Mein hun Sayraa — Subham ki AI assistant. Projects, skills ya contact — jo poochna hai, bol ke ya likh ke poochho! 😊";
+  "Namaste! 🙏 Main Sayraa hun, Subham ki AI assistant. Subham ke projects, skills ya contact ke bare mein jo poochna hai, poochho! 😊";
 
-// ── Fallback Rule-Based (if Gemini API fails) ────────────────────────
-const getFallbackResponse = (q) => {
+// ── Fallback Rule-Based (if Gemini/Groq API fails or is offline) ───────────
+const getFallbackResponse = (rawQ) => {
+  const q = (rawQ || '').toLowerCase();
+
   if (q.includes('resume') || q.includes('cv') || q.includes('summary') || q.includes('overview') || q.includes('profile'))
-    return "📄 **Subham Khandual's Resume Summary:**\n• B.Tech CS Student (2023–2027) at GIFT Autonomous, Bhubaneswar.\n• Full-Stack MERN & AI Developer with 2 CTTC internships (AI/ML & Core Java).\n• Creator of 15+ projects including Suraksha Setu & Swasthya Setu.\n• Tech Stack: React, Node.js, MongoDB, Java, Python, Tailwind, Firebase, Git.\n• 500+ coding problems solved & 5+ certifications!";
+    return "📄 **Subham's Profile:**\n• Final-year B.Tech CS Student at GIFT Autonomous, Bhubaneswar.\n• Full-Stack MERN & AI Developer with 2 CTTC internships.\n• Built 15+ live web/AI projects like Suraksha Setu & Swasthya Setu.\n• Tech: React, Node.js, MongoDB, Python, Java, Tailwind.";
 
   if (q.includes('experience') || q.includes('intern') || q.includes('cttc') || q.includes('work') || q.includes('job'))
-    return "💼 **Subham's Professional Experience:**\n1. **AI / ML Intern** at CTTC Bhubaneswar (May–July 2025): Developed Python ML pipelines, computer vision models & data preprocessing.\n2. **Core Java Intern** at CTTC Bhubaneswar (July 2024): Built database-driven desktop applications using Java OOP, JDBC, and MySQL.";
+    return "💼 **Subham's Experience:**\n1. AI / ML Intern at CTTC (2025): Machine Learning pipelines & Computer Vision.\n2. Core Java Intern at CTTC (2024): Desktop systems with Java OOP & JDBC.\n1+ years of building production-ready scalable applications!";
 
   if (q.includes('education') || q.includes('college') || q.includes('school') || q.includes('intermediate') || q.includes('btech') || q.includes('gift') || q.includes('degree') || q.includes('study'))
-    return "🎓 **Subham's Academic Background:**\n1. **B.Tech in CSE (2023 – 2027)** — GIFT Autonomous College, Bhubaneswar (DSA, Full-Stack, AI/ML)\n2. **+2 Science / Intermediate (2021 – 2023)** — Swadhin Residential Higher Secondary School, Nimapada, Puri\n3. **10th Matriculation (2010 – 2021)** — Saraswati Shishu Vidya Mandir, Astaranga, Puri";
+    return "🎓 **Subham's Education:**\n1. B.Tech in CSE (2023 - 2027) - GIFT Autonomous College, Bhubaneswar\n2. +2 Science (2021 - 2023) - Swadhin Residential College, Nimapada\n3. 10th Schooling (2010 - 2021) - Saraswati Shishu Vidya Mandir, Astaranga";
 
-  if (q.includes('achievement') || q.includes('metric') || q.includes('stats') || q.includes('problem') || q.includes('hackathon'))
-    return "🏆 **Key Achievements:**\n• 15+ Completed Web & AI Projects\n• 25+ Open-Source Repositories on GitHub\n• 500+ Solved Algorithmic Problems (DSA)\n• 10+ Hackathons & Coding Contests\n• 5+ Verified Certifications (CTTC & NPTEL)";
+  if (q.includes('skill') || q.includes('tool') || q.includes('stack') || q.includes('tech') || q.includes('react') || q.includes('node') || q.includes('java') || q.includes('python'))
+    return "🛠️ **Subham's Tech Stack:**\n• Frontend: React.js, Tailwind CSS, JavaScript, Three.js, Vite\n• Backend & Database: Node.js, Express, Python, MongoDB, MySQL\n• Tools & Cloud: Git, GitHub, VS Code, Postman, Vercel, PWA";
+
+  if (q.includes('project') || q.includes('swasthya') || q.includes('suraksha') || q.includes('sayraa') || q.includes('ppt') || q.includes('health') || q.includes('envistream'))
+    return "🚀 **Subham's Major Projects:**\n1. Suraksha Setu: AI Tourist Safety & SOS platform\n2. Swasthya Setu: Smart Healthcare platform with AI assistant\n3. Sayraa AI PPT Generator & Multilingual Voice Companion\nKisi project ka live link ya GitHub repo chahiye toh batao! 😊";
+
+  if (q.includes('achievement') || q.includes('metric') || q.includes('stats') || q.includes('hackathon') || q.includes('problem'))
+    return "🏆 **Key Achievements:**\n• 15+ Completed Web & AI Projects | 25+ GitHub Repositories\n• 500+ Solved Algorithmic Problems (DSA)\n• 10+ Hackathons & Coding Contests | 5+ Verified Certifications";
 
   if (q.includes('certificate') || q.includes('nptel') || q.includes('score'))
-    return "📜 **Certifications:**\n• CTTC AI & Machine Learning (2025)\n• CTTC Core Java Application Development (2024)\n• NPTEL Programming in Java - IIT Kharagpur (Score: 55%)\n• NPTEL Industry 4.0 & IIoT - IIT Kharagpur (Score: 67%)\n• NPTEL Social Media Security - IIIT Hyderabad (Score: 54%)";
+    return "📜 **Certifications:**\n• CTTC AI & Machine Learning (2025) & Core Java (2024)\n• NPTEL Programming in Java - IIT Kharagpur (55%)\n• NPTEL Industry 4.0 & IIoT - IIT Kharagpur (67%)\n• NPTEL Social Media Security - IIIT Hyderabad (54%)";
 
-  if (q.includes('skill') || q.includes('tool') || q.includes('stack') || q.includes('react') || q.includes('node') || q.includes('java') || q.includes('python'))
-    return "🛠️ **Tools & Tech Stack:**\n• **Frontend:** React.js, Tailwind CSS, HTML5, CSS3, JavaScript, Three.js\n• **Backend:** Node.js, Express.js, Python, Flask, REST APIs\n• **Databases:** MongoDB, MySQL, Firebase Firestore\n• **Tools:** Git, GitHub, VS Code, Postman, Vercel, PWA";
-
-  if (q.includes('project') || q.includes('swasthya') || q.includes('suraksha') || q.includes('sayraa') || q.includes('ppt') || q.includes('health'))
-    return "🚀 **Subham's 5 Major Projects:**\n1. **Suraksha Setu:** AI Tourist Safety platform with Emergency SOS & QR Tourist IDs → suraksha-setu-oxkw.vercel.app\n2. **Swasthya Setu:** Healthcare hub with **Sayraa Healthcare Chatbot**, doctor booking & blood bank locator → frontend-five-khaki-22.vercel.app\n3. **Sayraa AI PPT Generator:** AI PowerPoint slide generator powered by Groq & Gemini AI → ppt-generator-seven-mu.vercel.app\n4. **Sayraa AI Health Care Assistant:** Multilingual Voice AI health companion (Odia, Hindi, English) → sayraa-health-care-ai-assistant.vercel.app\n5. **Envistream Eduskill Chatbot:** AI-powered educational chatbot for study Q&A & guided learning → envistream-chatbot.vercel.app\nKisi ek project ki detail chahiye? 😊";
-
-  if (q.includes('contact') || q.includes('email') || q.includes('hire') || q.includes('phone') || q.includes('whatsapp') || q.includes('linkedin') || q.includes('github'))
+  if (q.includes('contact') || q.includes('email') || q.includes('hire') || q.includes('phone') || q.includes('whatsapp') || q.includes('linkedin') || q.includes('github') || q.includes('message'))
     return "📧 **Contact Subham:**\n• Email: subhamkhandual215@gmail.com\n• Phone / WhatsApp: +91 7894047169\n• LinkedIn: linkedin.com/in/subham-khandual\n• GitHub: github.com/subham-khandual";
 
-  return "Namaste! 🙏 I'm Sayraa, Subham's AI Assistant. Ask me anything about Subham's Resume — including his Projects, Tools, Education, Internships, Certifications, and Key Achievements!";
+  if (q.includes('who is subham') || q.includes('who are you') || q.includes('sayraa') || q.includes('about subham') || q.includes('subham'))
+    return "Namaste! 🙏 Main Sayraa hun, Subham Khandual ki AI Assistant.\nSubham ek passionate Full-Stack MERN & AI Developer hain.\nUnke projects, skills, education ya contact ke bare mein jo poochna hai poochho! 😊";
+
+  // Strict outside query guardrail
+  return "Main Sayraa, Subham ki AI assistant hun. Subham ke bare mein jo puchhna hai puchho! 😊";
 };
 
 // ── Component ─────────────────────────────────────────────────────────
@@ -499,20 +511,24 @@ const AiChatbot = () => {
       }
 
       if (fullText) {
+        // Enforce hard 5-lines limit defense on final response
+        const lines = fullText.split('\n');
+        const cappedText = lines.length > 5 ? lines.slice(0, 5).join('\n') : fullText;
+
         if (streamingStarted) {
           // Bubble already exists — finalise it with the complete trimmed text
           setMessages((prev) =>
-            prev.map((msg) => (msg.id === aiMsgId ? { ...msg, text: fullText } : msg))
+            prev.map((msg) => (msg.id === aiMsgId ? { ...msg, text: cappedText } : msg))
           );
         } else {
-          setMessages((prev) => [...prev, { sender: 'bot', text: fullText }]);
+          setMessages((prev) => [...prev, { sender: 'bot', text: cappedText }]);
         }
         // Speak whatever progressive speech did not already speak
-        const leftover = fullText.slice(spokenUpTo).trim();
+        const leftover = cappedText.slice(spokenUpTo).trim();
         if (leftover) {
           speakBotReply(leftover, { append: spokenAny });
         } else if (!spokenAny) {
-          speakBotReply(fullText);
+          speakBotReply(cappedText);
         }
       } else {
         // Gemini totally failed → graceful rule-based fallback
