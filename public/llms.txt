@@ -1,31 +1,100 @@
-# Subham Khandual — Full-Stack MERN & AI Developer Portfolio
+# Subham Khandual — Full-Stack MERN & AI Systems Developer
 
-> Portfolio of Subham Khandual, a Full-Stack MERN & AI developer based in Bhubaneswar, Odisha, India.
-> The site showcases featured projects, technical skills, experience, certifications, achievements and contact details.
+> Official machine-readable knowledge base for LLMs, AI agents, and Answer Engines (Perplexity, ChatGPT, Claude, Gemini).
+> Subham Khandual is a Full-Stack MERN & AI Developer based in Bhubaneswar, Odisha, India.
+> Currently pursuing B.Tech in Computer Science & Engineering (2023–2027) at Gandhi Institute for Technology (GIFT Autonomous), Bhubaneswar.
+> Website: https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/
 
-## Primary pages and sections
+---
 
-- [Home / Hero](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#home): Introduction, role, resume download and social profiles.
-- [About](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#about): Background, education and engineering focus.
-- [Skills](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#skills): Frontend, backend, database, language and tooling proficiency.
-- [Projects](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#projects): Suraksha Setu, Swasthya Setu, Sayraa AI PPT Generator, Sayraa AI Health Care Assistant and Envistream Eduskill Chatbot.
-- [Experience](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#experience): Professional and internship timeline.
-- [Achievements](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#achievements): Projects shipped, repositories, certifications, hackathons and DSA problems solved.
-- [GitHub](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#github): Open-source repositories and statistics.
-- [Certificates](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#certificates): CTTC and NPTEL certifications with verified credential links.
-- [Contact](https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/#contact): Direct message form, email, WhatsApp and location.
+## 👤 Personal & Contact Profile
 
-## Key project links
+- **Full Name:** Subham Khandual
+- **Role:** Full-Stack MERN & AI Developer
+- **Location:** Bhubaneswar, Odisha, India
+- **Email:** subhamkhandual215@gmail.com
+- **Phone / WhatsApp:** +91 7894047169 (https://wa.me/917894047169)
+- **LinkedIn:** https://www.linkedin.com/in/subham-khandual/
+- **GitHub:** https://github.com/subham-khandual
+- **Portfolio Live:** https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/
 
-- [Suraksha Setu — AI Smart Tourist Safety Platform](https://suraksha-setu-oxkw.vercel.app)
-- [Swasthya Setu — Comprehensive Healthcare Platform](https://frontend-five-khaki-22.vercel.app)
-- [Sayraa AI PPT Generator](https://ppt-generator-seven-mu.vercel.app)
-- [Sayraa AI Health Care Assistant](https://sayraa-health-care-ai-assistant.vercel.app)
-- [Envistream Eduskill Chatbot](https://envistream-chatbot.vercel.app/)
-- [GitHub profile](https://github.com/subham-khandual)
-- [LinkedIn profile](https://www.linkedin.com/in/subham-khandual/)
+---
 
-## Contact
+## 🛠️ Core Technical Skills & Stack
 
-- Email: subhamkhandual215@gmail.com
-- WhatsApp: https://wa.me/917894047169
+- **Frontend Development:** React 19, JavaScript (ES6+), HTML5, CSS Modules, Tailwind CSS, Three.js, React Three Fiber, GSAP, Framer Motion, Vite.
+- **Backend & APIs:** Node.js, Express.js, RESTful APIs, WebSockets, Python, Flask.
+- **Databases & Cloud:** MongoDB, Mongoose, MySQL, Firebase Firestore, Vercel.
+- **Programming Languages:** Java (Core Java, OOP, Multi-threading, JDBC), Python, C Language, JavaScript.
+- **Developer Tools & Architecture:** Git, GitHub, Postman, Progressive Web Apps (PWA), Web Speech API (TTS & STT).
+
+---
+
+## 🚀 Featured Production Projects
+
+### 1. Suraksha Setu (AI Tourist Safety Platform)
+- **Category:** Full-Stack MERN + AI Security Ecosystem
+- **Description:** Real-time tourist safety and emergency SOS platform featuring live safe-route guidance, QR-based digital tourist IDs, and an automated police & emergency contacts notification system.
+- **Tech Stack:** React.js, Node.js, Express.js, MongoDB, TypeScript, AI Chatbot.
+- **Live Demo:** https://suraksha-setu-oxkw.vercel.app
+- **Source Code:** https://github.com/subham-khandual/Suraksha-Setu
+
+### 2. Swasthya Setu (Comprehensive Healthcare Platform)
+- **Category:** Full-Stack MERN + Healthcare AI Hub
+- **Description:** Smart healthcare application providing instant first aid guidance, real-time blood bank inventory locator, online doctor consultations, and Sayraa AI health assistant.
+- **Tech Stack:** React.js, Node.js, Express.js, MongoDB, Tailwind CSS, Sayraa AI Chatbot.
+- **Live Demo:** https://frontend-five-khaki-22.vercel.app
+- **Source Code:** https://github.com/subham-khandual/swasthya-setu
+
+### 3. Sayraa AI PPT Generator
+- **Category:** AI Presentation Platform
+- **Description:** Automated AI tool that converts topic prompts into fully formatted, structured PowerPoint presentations with speaker notes using Gemini and Groq LLMs.
+- **Tech Stack:** Python, Flask, Gemini LLM, Groq Cloud, Bootstrap.
+- **Live Demo:** https://ppt-generator-seven-mu.vercel.app
+- **Source Code:** https://github.com/subham-khandual/ppt-generator
+
+### 4. Sayraa AI Health Care Assistant
+- **Category:** Multilingual Voice AI Companion
+- **Description:** Voice-enabled health companion offering medical guidance in Odia, Hindi, and English with offline PWA support and Web Speech API.
+- **Tech Stack:** React.js, Groq LLM, Web Speech API, Firebase, PWA, Tailwind CSS.
+- **Live Demo:** https://sayraa-health-care-ai-assistant.vercel.app
+- **Source Code:** https://github.com/subham-khandual/sayraa-health-care-ai-assistant
+
+### 5. Envistream Eduskill Chatbot
+- **Category:** Educational Conversational AI
+- **Description:** Interactive education chatbot providing instant study Q&A, academic resource curation, and student guidance.
+- **Tech Stack:** React.js, Node.js, Express.js, MongoDB, JavaScript.
+- **Live Demo:** https://envistream-chatbot.vercel.app/
+- **Source Code:** https://github.com/subham-khandual/Envistream-chatbot
+
+---
+
+## 💼 Professional Experience & Internships
+
+1. **AI / ML Developer Intern** — Central Tool Room & Training Centre (CTTC), Bhubaneswar
+   - *Timeline:* May 2025 – July 2025
+   - *Scope:* Engineered machine learning pipelines using Python, Scikit-learn, and Pandas. Evaluated predictive models for healthcare and computer vision workflows.
+
+2. **Core Java Developer Intern** — Central Tool Room & Training Centre (CTTC), Bhubaneswar
+   - *Timeline:* July 2024
+   - *Scope:* Built database-driven desktop software using Java OOP, Collections Framework, Exception Handling, JDBC, and MySQL.
+
+---
+
+## 📜 Verified Certifications & Academic Credentials
+
+1. **AI & Machine Learning Certification** — CTTC Bhubaneswar (2025)
+2. **Core Java Application Development** — CTTC Bhubaneswar (2024)
+3. **NPTEL Certification: Programming in Java (Elite)** — IIT Kharagpur (Score: 55%, 2024)
+4. **NPTEL Certification: Industry 4.0 & Industrial Internet of Things (IIoT)** — IIT Kharagpur (Score: 67%, 2025)
+5. **NPTEL Certification: Privacy and Security in Online Social Media** — IIIT Hyderabad (Score: 54%, 2025)
+
+---
+
+## 🏆 Key Metrics & Benchmarks
+
+- **Shipped Web & AI Applications:** 15+ Production Platforms
+- **Open-Source GitHub Repositories:** 25+ Public Repos
+- **DSA & Algorithmic Problem Solving:** 500+ Solved Challenges (LeetCode, CodeChef, NPTEL)
+- **Hackathons & Coding Competitions:** 10+ Participated
+- **Industry & Academic Certifications:** 5+ Verified Credentials

@@ -1,4 +1,33 @@
+# https://www.robotstxt.org/robotstxt.html
+# Allow all standard search engines and AI answer engines to index and cite
+
 User-agent: *
 Allow: /
 
+# OpenAI Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic Claude Crawlers
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Perplexity AI Answer Engine
+User-agent: PerplexityBot
+Allow: /
+
+# Google & Apple AI Crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# AI Manifests
 Sitemap: https://portfolio-nine-alpha-8nkzp7nnk6.vercel.app/sitemap.xml
