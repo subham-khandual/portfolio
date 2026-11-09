@@ -30,4 +30,5 @@ backend/.env
 
 # Temporary / Analysis
 lh-trace.json
+lighthouse-report*.html
 *.tmp.*
