@@ -175,6 +175,8 @@
   flex-wrap: wrap;
   gap: 1.15rem;
   margin-bottom: 2.5rem;
+  position: relative;
+  z-index: 5;
 }
 
 .viewProjectsBtn {
@@ -184,19 +186,19 @@
   padding: 0.85rem 1.85rem;
   border-radius: 9999px;
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: #ffffff;
+  color: #ffffff !important;
   font-family: var(--font-body);
   font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
   box-shadow: 0 4px 25px rgba(99, 102, 241, 0.45);
-  transition: all 0.25s ease;
+  cursor: pointer;
 }
 
 .viewProjectsBtn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 30px rgba(99, 102, 241, 0.6);
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .connectBtn {
@@ -207,13 +209,13 @@
   border-radius: 9999px;
   background: rgba(15, 23, 42, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  color: #ffffff !important;
   font-family: var(--font-body);
   font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
   backdrop-filter: blur(8px);
-  transition: all 0.25s ease;
+  cursor: pointer;
 }
 
 .connectBtn:hover {
@@ -221,7 +223,7 @@
   background: rgba(0, 119, 181, 0.15);
   box-shadow: 0 0 20px rgba(0, 119, 181, 0.4);
   transform: translateY(-2px);
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .linkedinIcon {

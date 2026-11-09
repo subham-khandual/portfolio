@@ -103,15 +103,21 @@ const Hero = () => {
           },
           '-=0.4'
         )
-        .from(
+        .fromTo(
           `.${styles.actionGroup} a`,
           {
             opacity: 0,
             y: 20,
             scale: 0.95,
+          },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
             stagger: 0.12,
             duration: 0.55,
             ease: 'back.out(1.5)',
+            clearProps: 'opacity,visibility,transform',
           },
           '-=0.3'
         )
