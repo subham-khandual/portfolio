@@ -204,7 +204,23 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static semantic SEO/GEO fallback: visible to Bingbot, Googlebot, and answer engines before JS hydration -->
+      <header class="seo-initial-hero" style="text-align: center; padding: 4rem 1.5rem 2rem; color: #ffffff; font-family: 'Poppins', -apple-system, sans-serif;">
+        <h1 style="font-size: 2.25rem; font-weight: 700; margin: 0 0 1rem; color: #ffffff; letter-spacing: -0.02em;">
+          Subham Khandual — Full-Stack MERN &amp; AI Developer
+        </h1>
+        <p style="font-size: 1.1rem; color: #94a3b8; max-width: 650px; margin: 0 auto; line-height: 1.6; font-family: 'Inter', -apple-system, sans-serif;">
+          Engineering intelligent web platforms, AI systems, and scalable cloud solutions based in Bhubaneswar, Odisha, India.
+        </p>
+      </header>
+    </div>
+    <noscript>
+      <header style="text-align: center; padding: 2rem; color: #ffffff; font-family: 'Poppins', -apple-system, sans-serif;">
+        <h1 style="font-size: 2rem; color: #ffffff;">Subham Khandual — Full-Stack MERN &amp; AI Developer</h1>
+        <p style="color: #94a3b8;">Portfolio of Subham Khandual: Full-Stack MERN and AI Systems Engineer.</p>
+      </header>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
