@@ -9,13 +9,21 @@ import React, { useEffect, useRef, useState } from 'react';
  * - Dismisses on `window.load` (with a safety timeout) so it never blocks the page.
  * - `aria-hidden` because it is purely decorative.
  */
+const SEARCH_BOT_REGEX =
+  /bot|googlebot|bingbot|yandex|baiduspider|duckduckbot|slurp|crawler|spider|inspectiontool|google-inspectiontool/i;
+
 const LoadingScreen = () => {
   const [progress, setProgress] = useState(10);
   const [fading, setFading] = useState(false);
-  const [hidden, setHidden] = useState(false);
+  const [hidden, setHidden] = useState(() => {
+    return typeof navigator !== 'undefined' && SEARCH_BOT_REGEX.test(navigator.userAgent);
+  });
   const dismissed = useRef(false);
 
   useEffect(() => {
+    if (typeof navigator !== 'undefined' && SEARCH_BOT_REGEX.test(navigator.userAgent)) {
+      return undefined;
+    }
     const timers = [34, 68, 100].map((value, i) =>
       setTimeout(() => setProgress(value), 45 * (i + 1))
     );

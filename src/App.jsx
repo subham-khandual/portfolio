@@ -24,15 +24,22 @@ const AiChatbot = lazy(() => import('./components/AiChatbot'));
 const CommandPalette = lazy(() => import('./components/CommandPalette'));
 const TerminalModal = lazy(() => import('./components/TerminalModal'));
 
+const SEARCH_BOT_REGEX =
+  /bot|googlebot|bingbot|yandex|baiduspider|duckduckbot|slurp|crawler|spider|inspectiontool|google-inspectiontool/i;
+
+function isSearchCrawler() {
+  return typeof navigator !== 'undefined' && SEARCH_BOT_REGEX.test(navigator.userAgent);
+}
+
 /**
  * LazySection: Defers below-the-fold component mounting until the user scrolls,
- * touches the page, or approaches the section. This guarantees instant 90+
- * Lighthouse FCP & LCP by keeping the initial thread clean of WebGL and heavy DOM.
+ * touches the page, or approaches the section. Search crawlers bypass deferral
+ * so Googlebot/Bingbot WRS sees 100% of the page content without scrolling.
  */
 function LazySection({ children, id, minHeight = '400px' }) {
   const [shouldLoad, setShouldLoad] = useState(() => {
     if (typeof window === 'undefined') return false;
-    return (id && window.location.hash === `#${id}`) || window.scrollY > 80;
+    return isSearchCrawler() || (id && window.location.hash === `#${id}`) || window.scrollY > 80;
   });
   const containerRef = useRef(null);
 
